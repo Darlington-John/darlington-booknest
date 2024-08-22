@@ -2,32 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+
+*{
+  font-variant-ligatures: none;
+  /* Or */
+  font-feature-settings: "liga" 0, "clig" 0, "hlig" 0;
+}
+.flow::-webkit-scrollbar {
+  height: 0px;
+  width: 0px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@keyframes fadIn {
+  from {
+    transform:translateY(100%) ;
+  }
+  to {
+    transform:translateY(0px) ;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@keyframes fadOut {
+  from {
+    transform:translateY(0%) ;
+  }
+  to {
+    transform:translateY(100%);
+  }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.pop {
+  transform:translateY(100%) ;
+  animation: fadIn 0.5s forwards;
+}
+
+/* Apply the fade-out animation */
+.pop-hidden {
+
+  animation: fadOut 0.5s forwards;
 }
