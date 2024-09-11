@@ -41,3 +41,62 @@
 
   animation: fadOut 0.5s forwards;
 }
+
+@keyframes fade{
+  from {
+    height: 0px;
+  }
+  to {
+ height: 90px;
+  }
+}
+@keyframes fadeOut {
+  from {
+    height: 90px;
+  }
+  to {
+ height: 0px;
+ padding: 0;
+  }
+}
+.popup {
+height: 90px;
+  animation: fade 0.3s forwards;
+}
+
+/* Apply the fade-out animation */
+.popup-hidden {
+
+  animation: fadeOut 0.3s forwards;
+}
+
+.readingBook-button{
+display: none;
+}
+
+.readingBook:hover .readingBook-button{
+display: flex;
+}
+.book-flow::-webkit-scrollbar {
+  width: 4px;
+  overflow: hidden;
+}
+.book-flow::-webkit-scrollbar-thumb {
+  background: #8c8c8c; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Rounded corners */
+
+}
+
+.book-flow::-webkit-scrollbar-thumb:hover {
+  background: #818181; /* Color of the scrollbar thumb on hover */
+}
+
+.book-flow::-webkit-scrollbar-track {
+  background: #ffffff00; /* Color of the scrollbar track */
+}
+
+@media screen  and (max-width: 1023px) {
+  .readingBook-button{
+    display: flex;
+    }
+}

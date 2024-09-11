@@ -1,14 +1,15 @@
 // app/context/UserContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 const UserContext = createContext<any>(null);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -39,11 +40,45 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchUser();
   }, []);
+  const [isDropped, setIsDropped] = useState(false);
+    const linkname = usePathname();
 
+    useEffect(() => {
+setIsDropped(false);
+    }, [linkname]);
+
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const DroppedRef = useRef<HTMLDivElement>(null);
+    const toggleDroppedPopup = () => {
+      if (!isDropped) {
+        setIsDropped(true);
+        setIsPopupVisible(true);
+      } else {
+        setIsPopupVisible(false);
+        setTimeout(() => setIsDropped(false), 500);
+      }
+      
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (DroppedRef.current && !DroppedRef.current.contains(event.target as Node)) {
+        setIsPopupVisible(false);
+        setTimeout(() => setIsDropped(false), 500);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
 
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={{user, isOverlayOpen, setIsOverlayOpen,isDropped, setIsDropped, DroppedRef, toggleDroppedPopup, isPopupVisible, setIsPopupVisible, loading
+
+    }}>
       {children}
     </UserContext.Provider>
   );

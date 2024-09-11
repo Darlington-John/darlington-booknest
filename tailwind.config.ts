@@ -10,11 +10,13 @@ const config: Config = {
     colors: {
 grey: '#707070',
 lightGrey: '#cfccc9',
+lighterGrey: '#F4F5F8',
 black: '#000',
 red: '#D14031',
 green: '#054f31',
 white:'#fff',
-pink: '#F6D9D5'
+pink: '#F6D9D5',
+lightPink: '#ffaeae26'
     },
     screens: {
       '4xl': '1600px',

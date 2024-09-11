@@ -1,10 +1,13 @@
-import type { Metadata } from "next";
+"use client"
 import "./globals.css";
 import localFont from 'next/font/local'
 import Header from "./components/header";
 import Footer from "./components/footer";
 import { UserProvider } from "./context/AuthContext";
-
+import { Provider } from "react-redux";
+import store from "./store";
+import Overlay from "./dashboard/components/overlay";
+import { BookProvider } from "./context/BookContext";
 
 const myFont = localFont({ src: [
   {
@@ -27,10 +30,6 @@ const myFont = localFont({ src: [
 ],
 
 })
-export const metadata: Metadata = {
-  title: "Book nest",
-  description: "Your personal library, redefined.",
-};
 
 export default function RootLayout({
   children,
@@ -39,14 +38,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+    
       <body className={` bg-white relative   ${myFont.className}`}>
+        <Provider store={store}>
         <UserProvider>
+          <BookProvider>
         <Header/>
+        <Overlay/>
        {/* <UserProvider> */}
         {children}
         {/* </UserProvider> */}
         <Footer/>
+        </BookProvider>
         </UserProvider>
+        </Provider>
         </body>
     </html>
   );

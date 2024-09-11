@@ -60,13 +60,13 @@ export default function SignUp() {
     setIsPasswordVisible(!isPasswordVisible);
   };
   return (
-    <div   className='relative flex items-center justify-center h-screen w-full  '>
-            <Link href="/" className="flex  items-center text-3xl font-[800] md:text-xl  2xs:shrink-0  absolute top-3 left-4 z-40">
-<img
-      src="/assets/icons/bird.svg"
-  className="w-12  md:w-8  " alt="library"
+    <div   className='relative flex items-center justify-center h-screen w-full  px-2'>
+            <Link href="/" className="flex  items-center text-3xl font-[800] md:text-2xl  2xs:shrink-0  absolute top-3 left-4 z-40">
+            <img
+      src="/assets/images/me.png"
+  className="w-5   md:w-4" alt="library"
     />
-    <h1 className="text-white  xs:hidden">BookNest</h1>
+    <h1 className="text-white">BookNest</h1>
 </Link>
             <Image    src="/assets/images/library.jpg"
 fill
@@ -140,7 +140,7 @@ className="w-5  h-5"
       </button>
       </div>
       <div className='flex items-center justify-between  pt-2'>
-        <button type="submit" className='bg-black text-sm font-semibold py-2 w-[100px] text-white rounded-full'>Sign up</button>
+        <button type="submit" className='bg-black text-sm font-semibold py-2 w-[100px] text-white rounded-full hover:bg-red transition duration-300 ease-out'>Sign up</button>
         <Link href="/login" className='text-xs text-grey underline'>Already  have an account?</Link>
         
         </div>

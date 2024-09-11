@@ -1,8 +1,11 @@
 "use client"
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useUser } from "~/app/context/AuthContext";
 
 const Hero = () => {
+const {user, loading} = useUser();
     return (<motion.section className="h-screen   overflow-hidden relative  flex items-center justify-center  xs:h-[60vh] ease"   initial={{ opacity: 0,  }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}>
@@ -22,9 +25,14 @@ priority={true}
     <p className="text-[#ffffffde] text-center w-[600px]  font-semibold text-base lg:leading-snug  sm:w-full  xs:text-sm">
     BookNest is a digital bookshelf that brings the joy of reading to your fingertips. It offers a seamless and interactive experience for book lovers who want to discover, read, and organize books effortlessly
     </p>
-    <button className="bg-[#D14031] w-[180px] h-[50px]  text-white  rounded-2xl xs:text-sm xs:w-[120px]   xs:h-[40px]  hover:bg-pink  hover:text-red  transition duration-300 hover:ring-2  ring-red">
+{loading ? (    <Link href={'/signup'} className="bg-[#D14031] w-[180px] h-[50px]  text-white  rounded-2xl xs:text-sm xs:w-[120px]   xs:h-[40px]  hover:bg-pink  hover:text-red  transition duration-300 hover:ring-2  ring-red flex items-center justify-center">
 Get started
-    </button>
+    </Link>): ( <>{user ? (<Link href={'/dashboard/trending'} className="bg-[#D14031] w-[180px] h-[50px]  text-white  rounded-2xl xs:text-sm xs:w-[120px]   xs:h-[40px]  hover:bg-pink  hover:text-red  transition duration-300 hover:ring-2  ring-red flex items-center justify-center">
+Your Library
+    </Link>) : (<Link href={'/signup'} className="bg-[#D14031] w-[180px] h-[50px]  text-white  rounded-2xl xs:text-sm xs:w-[120px]   xs:h-[40px]  hover:bg-pink  hover:text-red  transition duration-300 hover:ring-2  ring-red flex items-center justify-center">
+Get started
+    </Link>)}</>   )}
+
     </div>
     </motion.section>  );
 }

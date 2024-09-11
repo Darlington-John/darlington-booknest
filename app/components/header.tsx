@@ -1,9 +1,9 @@
 "use client"
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUser } from "../context/AuthContext";
+import { toggleOverlay } from "../dashboard/components/header";
 
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true);
@@ -11,7 +11,7 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
   
-    const user = useUser();
+    const {user, loading, isDropped, DroppedRef, toggleDroppedPopup, isPopupVisible, } = useUser();
     const handleScrollBeyond = () => {
       const scrollTop = window.scrollY;  // Get the vertical scroll position
       const scrollThreshold = 100;  // Set the height at which the logo should change
@@ -22,7 +22,7 @@ const Header = () => {
         setIsScrolled(false);
       }
     };
-  
+
     useEffect(() => {
       window.addEventListener('scroll', handleScrollBeyond);
   
@@ -51,35 +51,62 @@ const Header = () => {
       };
     }, [lastScrollY]);
   
-    const elementStyle = {
-      transition: 'all 0.5s',
-      opacity: isVisible ? 1 : 0,
-      transform:  isVisible ? 'translateY(0)' : 'translateY(-50px)'
-    };
     const linkname = usePathname();
-    return (<nav className={`flex items-center justify-between     px-4   top-0 w-full text-white   md:py-1 xs:px-2 z-40   transition duration-300  xs:py-0  z-50  ${isScrolled &&'bg-red'}  ${linkname === '/' ? ' fixed  ' : ' sticky bg-red'}   ${linkname === '/login' || linkname === '/signup'  ? ' hidden': 'flex'}`}>
-<Link href="/" className="flex  items-center text-3xl font-[800] md:text-xl  2xs:shrink-0">
+    const {isOverlayOpen, setIsOverlayOpen} = useUser();
+    const BarsIcon = '/assets/icons/Bars.svg'
+    const XmarkIcon = '/assets/icons/Xmark.svg'
+ const [icon, setIcon] = useState(BarsIcon);
+
+    useEffect(() => {
+      const overlayElement = document.getElementById('myOverlay');
+      if (!overlayElement) {
+        return;
+      }
+  overlayElement.style.width = '0%';
+  setIsOverlayOpen(false);
+  setIcon(BarsIcon);
+    }, [linkname, setIsOverlayOpen]);
+    const handleToggleOverlay = () => {
+        toggleOverlay();
+        setIsOverlayOpen(!isOverlayOpen);
+        setIcon(isOverlayOpen ? BarsIcon : XmarkIcon);
+      };
+
+      const dynamicLink = linkname.startsWith('/books') ? '/dashboard/reading' : '/dashboard/trending'
+    return (<nav className={`flex items-center justify-between     px-4   top-0 w-full text-white   md:py-1 xs:px-2 z-40   transition duration-300  xs:py-0  z-50  h-[60px] md:h-[50px] xs:h-[40px]  ${isScrolled &&'bg-red'}  ${linkname === '/' ? ' fixed  ' : ' sticky bg-red'}   ${linkname === '/login' || linkname === '/signup' || linkname.startsWith('/dashboard')  ? ' hidden': 'flex'}`}>
+      {user && (  <button className="  h-10 w-10  bg-[#9a9a9a66]  rounded-full  lg:flex items-center justify-center hidden xs:h-8 xs:w-8 backdrop-blur-lg" onClick={handleToggleOverlay}>
+<img src={icon} alt="" className="w-4 xs:w-[12px]" />
+</button>)}
+<Link href="/" className="flex  items-center text-3xl font-[800] md:text-xl  2xs:shrink-0 gap-1">
 <img
-      src="/assets/icons/bird.svg"
-  className="w-12  md:w-8  " alt="library"
+      src="/assets/images/me.png"
+  className="w-5  md:w-[15px]   " alt="library"
     />
-    <h1 className="text-white  xs:hidden">BookNest</h1>
+    <h1 className="text-white  ">BookNest</h1>
 </Link>
 
 <div className="flex gap-2 items-center xs:gap-1">
-<form className="flex gap-2 items-center hidden" style={elementStyle}>
-    <input className="w-[400px]  bg-[#ffffffee]  rounded-md  h-10   px-2  text-black md:w-[300px] md:h-10 2xs:w-[200px]  md:text-sm" placeholder="search here for books  "/>
-    <button className="h-10 px-4 rounded-md bg-black  md:h-10 xs:px-3" type="button">
-<img     src="/assets/icons/search.svg"
-  className="w-4 md:w-4" alt="library"/>
-  </button>
-  </form>
+
   <div className="flex items-center gap-3 xs:gap-1">
-  {user?(  <Link href="/profile">
-  <button className="h-12 px-4 rounded-full bg-black  md:h-10 xs:px-3  w-auto text-white xs:w-auto  xs:text-sm  xs:h-8  font-[800]" type="button">
-{user.firstName}  {user.lastName}
-  </button>
-  </Link>) : (<>    <Link href='/login'>
+    {loading ? null : (
+     <> user? (<button className="h-12 px-4 rounded-full bg-black  md:h-10 xs:px-3  w-auto text-white xs:w-auto  xs:text-sm  xs:h-8  font-[800] relative" 
+  type="button" onMouseEnter={toggleDroppedPopup}  onMouseLeave={toggleDroppedPopup}>
+  {user?.lastName} {user?.firstName}
+{isDropped && (
+  <div  className={`rounded-xl py-[2px]  px-[0px]   backdrop-blur-lg bg-black  absolute  popup z-30 flex right-0  overflow-hidden top-[48px] w-[160px]     ${isPopupVisible ? '' : 'popup-hidden'}`} ref={DroppedRef}>
+
+    <div className="flex flex-col gap-1  px-2 py-1  text-white   rounded-lg leading-none  ease-out duration-300  font-semibold w-full">
+<Link href="/profile" className="text-sm hover:bg-grey  hover:text-white  ease-out duration-300 py-2 rounded-md">
+View profile
+</Link>
+
+<Link href={dynamicLink} className="text-sm hover:bg-grey  hover:text-white  ease-out duration-300 py-2 rounded-md">
+Your library
+</Link>
+</div>
+  </div>
+)}
+  </button>): (<>    <Link href='/login'>
   <button className="h-12 px-4 rounded-full   md:h-10 xs:px-3  w-[100px]  xs:w-[80px] xs:text-sm  xs:h-8     border border-pink bg-pink text-red" type="button">
 Login
   </button>
@@ -88,7 +115,8 @@ Login
   <button className="h-12 px-4 rounded-full bg-black  md:h-10 xs:px-3  w-[100px] text-white xs:w-[80px] xs:text-sm  xs:h-8  " type="button">
 Sign up
   </button>
-  </Link></>)}
+  </Link></>)</>)}
+
 
   </div>
 </div>

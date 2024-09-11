@@ -11,7 +11,7 @@ const BookFlow = (props: any) => {
         <div className="flex gap-8 items-start justify-center 2xl:overflow-auto   2xl:justify-normal w-screen   xs:gap-4  flow"style={{paddingLeft: '16px', paddingRight: '16px'}}  >
         {props.books && props.books.length > 0 ? (
         props.books.map((book: any) => (
-          <Cards bookNew key={book.id} {...book} />
+          <Cards bookmain key={book.id} {...book} />
         ))
       ) : (
         <p>No books available</p>

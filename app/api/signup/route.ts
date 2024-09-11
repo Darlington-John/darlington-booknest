@@ -30,7 +30,13 @@ export async function POST(req: NextRequest) {
       email,
       password: hashedPassword,
     });
-
+    newUser.profile= "";
+    
+    newUser.donatedBooks = [];
+    newUser.currentlyReading = [];
+    newUser.alreadyRead = [];
+    newUser.toRead = [];
+    newUser.shelves = [];
     await newUser.save();
 
     return NextResponse.json({ message: 'User created successfully' }, { status: 201 });
