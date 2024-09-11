@@ -33,7 +33,7 @@ const nested =(matchingBooks?.length > 0 || donatedBooks?.length > 0
 <img src="/assets/images/double.gif" alt="" className="w-32 xs:w-20"/>
       </div>:( <section className={`flex flex-col gap-12  py-20  xs:py-10 xs:gap-4 w-full px-4 h-full     xs:justify-center    xs:py-4  ${loading ? 'justify-center':'justify-start xs:h-auto'}  `}>
         {matchingBooks.length > 0  || donatedBooks?.length > 0? null: (<div className={`flex flex-col gap-1 items-center`}>
-      <p className="    text-2xl text-center  font-medium  text-red  md:text-lg">You don{`'`}t have any books you are done reading.<br/> <Link href='/dashboard/trending' className="underline  hover:text-red font-semibold text-grey text-lg  md:text-xs">Start a new book today!</Link></p>
+      <p className="    text-2xl text-center  font-medium  text-red  md:text-lg">You don{`'`}t have any books you are done reading<br/> <Link href='/dashboard/trending' className="underline  hover:text-red font-semibold text-grey text-lg  md:text-xs">Start a new book today!</Link></p>
       </div>)}
         <div className={`flex flex-col gap-10   0 xs:gap-4 w-full  xs:justify-center     ${matchingBooks?.length > 0  ?'': 'hidden'}`}>
    {matchingBooks?.length>0 && ( <div className="flex flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
