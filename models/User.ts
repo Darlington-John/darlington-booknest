@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// Define the currentlyReading sub-schema
+
 
 
 const currentlyReadingSchema: Schema = new Schema({
@@ -61,8 +61,8 @@ const shelfSchema: Schema = new Schema({
 const bookSchema: Schema = new mongoose.Schema({title: { type: String, required: true },
   author: { type: String, required: true },
   description: { type: String, required: true },
-  pdf: { type: String, required: false }, // URL to the PDF file
-  coverImage: { type: String, required: false }, // URL to the cover image
+  pdf: { type: String, required: false }, 
+  coverImage: { type: String, required: false }, 
   genres: {
     mystery: { type: Boolean, default: false },
     sciFi: { type: Boolean, default: false },
@@ -74,10 +74,30 @@ const bookSchema: Schema = new mongoose.Schema({title: { type: String, required:
     inspirational: { type: Boolean, default: false },
     biography: { type: Boolean, default: false },
   },
+
   pageCount: { type: Number, required: true },
-  authorProfile: { type: String, required: false }, // URL to the author's profile picture
+  authorProfile: { type: String, required: false }, 
   aboutAuthor: { type: String, required: false },
-  donatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to the user who donated the book
+  donatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
+  ratings: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+      rating: { type: Number, required: false },  
+    },
+  ],
+  reviews: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+      firstName: {type:String, required:false},
+      lastName: {type:String, required:false},
+      profile: {type: String, required: false},
+      date: {type: Date, required: false},
+
+      comment: { type: String, required: false },  
+      likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],  
+      dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],  
+    },
+  ],
 }, { timestamps: true });
 
 interface IBook extends Document {
@@ -100,7 +120,24 @@ interface IBook extends Document {
   pageCount: number;
   authorProfile?: string;
   aboutAuthor?: string;
+  ratings: {
+    userId:  mongoose.Types.ObjectId;
+    rating: number; 
+  }[];
+  reviews: {
+    userId:  mongoose.Types.ObjectId;
+
+    firstName: string,
+    lastName: string,
+    profile: string,
+    date: Date,
+    comment: string;
+    likes:  mongoose.Types.ObjectId[]; 
+    dislikes:  mongoose.Types.ObjectId[]; 
+  }[];
+  
   donatedBy: mongoose.Types.ObjectId;
+
 }
 interface ICurrentlyReading {
   name: string;
@@ -157,7 +194,7 @@ interface IUser extends Document {
       coverImage?: string;
       pageCount?: number;
       donatedBy?: string;
-    }>; // Array of book URLs
+    }>; 
   }>;
   donatedBooks: mongoose.Types.ObjectId[];
 }
@@ -168,7 +205,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   profile: { type: String, required: false },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  currentlyReading: { type: [currentlyReadingSchema], default: [] }, // Set default value to []
+  currentlyReading: { type: [currentlyReadingSchema], default: [] }, 
   alreadyRead: { type: [alreadyReadSchema], default: [] },
   toRead: { type: [toReadSchema], default: [] },
   shelves: { type: [shelfSchema], default: [] },

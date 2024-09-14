@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 const updateName = async (newFirstName: string, newLastName: string) => {
   try {
-    const token = localStorage.getItem('token'); // Get the JWT token from local storage
+    const token = localStorage.getItem('token'); 
 
     const res = await fetch('/api/update-name', {
       method: 'PUT',
@@ -20,7 +20,7 @@ const updateName = async (newFirstName: string, newLastName: string) => {
 
     if (res.ok) {
       console.log('Name updated successfully:', data.user);
-      // You can update the state or UI with the new name
+      
     } else {
       console.error('Failed to update name:', data.error);
     }
@@ -43,12 +43,12 @@ const ProfilePage = () => {
           const data = await res.json();
           setUser(data.user);
         } else {
-          // Handle errors, e.g., redirect to login
+          
           window.location.href = '/login';
         }
       } catch (err) {
         console.error('Failed to fetch user', err);
-        window.location.href = '/login'; // Redirect to login on error
+        window.location.href = '/login'; 
       } finally {
         setLoading(false);
       }
@@ -61,27 +61,27 @@ const ProfilePage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      router.push('/'); // Redirect authenticated users to the dashboard
+      router.push('/'); 
     }
   }, [router]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loaderVisible, setLoaderVisible] = useState(false);
   const handleUpdate = async () => {
-    setLoaderVisible(true); // Show the loader immediately
+    setLoaderVisible(true); 
   
     try {
       await updateName(firstName, lastName);
   
-      // After successfully updating, reload the page after a delay
+      
       setTimeout(() => {
-        window.location.reload(); // Reload the page
+        window.location.reload(); 
       }, 1000);
     } catch (error) {
       console.error('Failed to update name:', error);
-      // Optionally handle the error, e.g., show an error message to the user
+      
     } finally {
-      setLoaderVisible(false); // Hide the loader after the process is complete
+      setLoaderVisible(false); 
     }
   };
   const [edit, setEdit] = useState(false);
@@ -145,12 +145,12 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   if (selectedFile) {
     setFile(selectedFile);
 
-    // Generate a preview of the selected file
+    
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImageUrl(reader.result as string); // Set the preview image URL
+      setImageUrl(reader.result as string); 
     };
-    reader.readAsDataURL(selectedFile); // Read the selected file as a Data URL
+    reader.readAsDataURL(selectedFile); 
   }
 };
 
@@ -235,7 +235,7 @@ ID: {user._id}
 <div className='w-full flex flex-col gap-2 '>
 <button onClick={async () => {
             localStorage.removeItem('token');
-            window.location.href = '/login'; // Redirect to login after logout
+            window.location.href = '/login'; 
           }} className='text-base font-semibold bg-red  text-white   p-2 rounded-lg px-4 self-end w-full  hover:bg-black   hover:text-white transition  duration-150 ease-it'>
   Logout {loading && null }
 </button>

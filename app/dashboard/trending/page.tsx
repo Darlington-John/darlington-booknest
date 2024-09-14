@@ -3,6 +3,7 @@ import { bestSellers } from "~/app/data/best-sellers";
 import { newBooks } from "~/app/data/new-arrivals";
 import Header from "../components/header";
 
+
 const books = [...newBooks, ...bestSellers]
 const Trending = () => {
     return (  <div className="flex  flex-col w-full h-screen overflow-auto ">

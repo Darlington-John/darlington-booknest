@@ -35,13 +35,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Missing fields: ${missingFields.join(', ')}` }, { status: 400 });
     }
 
-    // Check if the book is already in the currentlyReading array
+    
     const isAlreadyReading = user.currentlyReading.some((currentlyReadingBook: any) => currentlyReadingBook.url === book.url);
 
-    // Remove the book from the toRead array if it exists there
+    
     user.toRead = user.toRead.filter((toReadBook: any) => toReadBook.url !== book.url);
 
-    // Add the book to the currentlyReading array only if it's not already there
+    
     if (!isAlreadyReading) {
       user.currentlyReading.push(book);
     }

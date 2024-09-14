@@ -35,20 +35,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Missing fields: ${missingFields.join(', ')}` }, { status: 400 });
     }
 
-    // Check if the book is already in the currentlyReading array
+    
     const isBookAlreadyAdded = user.currentlyReading.some(
       (currentlyReadingBook: any) => currentlyReadingBook.id === book.id || currentlyReadingBook.coverImage === book.coverImage
     );
 
     if (isBookAlreadyAdded) {
-      // If the book is already in the currentlyReading array, do nothing
+      
       return NextResponse.json({ message: 'Book is already in currently reading' }, { status: 200 });
     }
 
-    // Remove the book from the toRead array if it exists there
+    
     user.toRead = user.toRead.filter((toReadBook: any) => toReadBook.id !== book.id && toReadBook.coverImage !== book.coverImage);
 
-    // Add the book to the currentlyReading array
+    
     user.currentlyReading.push(book);
 
     await user.save();

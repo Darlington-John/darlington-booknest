@@ -1,7 +1,7 @@
-// app/context/BookContext.tsx
+
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 const BookContext = createContext<any>(null);
 
@@ -29,9 +29,15 @@ export const BookProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchBooks();
   }, []);
-
+  const providerValue = useMemo(() => ({
+  books,
+    loading
+  }), [
+books, 
+    loading
+  ]);
   return (
-    <BookContext.Provider value={{ books, loading }}>
+    <BookContext.Provider value={providerValue}>
       {children}
     </BookContext.Provider>
   );

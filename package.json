@@ -17,6 +17,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.4.0",
     "framer-motion": "^11.3.31",
+    "fuse.js": "^7.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mongoose": "^8.5.3",

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     await connectMongo();
 
-    // Destructure all fields from the request body
+    
     const { name, url, pdf, title, author, donatedPdf, coverImage, pageCount, donatedBy } = await req.json();
 
     const authHeader = req.headers.get('Authorization');
@@ -27,13 +27,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Remove the book from `currentlyReading` if it exists
+    
     user.currentlyReading = user.currentlyReading.filter(book => book.coverImage !== coverImage);
 
-    // Check if the book is already in `alreadyRead`
+    
     const isAlreadyRead = user.alreadyRead.some(book => book.coverImage === coverImage);
 
-    // Add the book to `alreadyRead` only if it's not already there
+    
     if (!isAlreadyRead) {
       user.alreadyRead.push({
         name,

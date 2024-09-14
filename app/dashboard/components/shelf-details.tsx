@@ -13,7 +13,7 @@ const ShelfDetails = ({shelf}: any) => {
   
     const bookLibrary = [...newBooks, ...bestSellers];
   
-    // Convert shelf.books to plain JavaScript array
+    
     const plainBooksArray = shelf.books.map((book: any) => book.toObject ? book.toObject() : book);
   
     const matchingBooks = plainBooksArray

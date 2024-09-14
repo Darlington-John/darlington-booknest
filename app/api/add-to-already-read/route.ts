@@ -25,13 +25,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Remove the book from `currentlyReading`
+    
     user.currentlyReading = user.currentlyReading.filter(book => book.url !== url);
 
-    // Check if the book is already in `alreadyRead`
+    
     const isAlreadyRead = user.alreadyRead.some(book => book.url === url);
 
-    // Add the book to `alreadyRead` only if it's not already there
+    
     if (!isAlreadyRead) {
       (user.alreadyRead as any).push({ url });
     }

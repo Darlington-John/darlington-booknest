@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req: NextRequest) {
   try {
-    // Ensure the JWT secret is defined
+    
     if (!JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined in the environment variables');
     }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ token });
   } catch (error: any) {
     console.error('Login error:', error);
-    // Return specific error message based on the type of error
+    
     const errorMessage =
       error.message || 'An error occurred during login';
     return NextResponse.json({ error: errorMessage }, { status: 500 });

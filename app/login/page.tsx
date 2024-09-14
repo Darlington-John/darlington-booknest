@@ -10,11 +10,23 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading]= useState(false);
   const handleTogglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+  const check = !(
+    email &&
+  password
+  );
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if(check){
+      setLoading(false)
+    }
+    else{
+      setLoading(true)
+    }
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -23,9 +35,10 @@ const LoginPage = () => {
       });
 
       if (res.ok) {
+        setLoading(false)
         const data = await res.json();
         localStorage.setItem('token', data.token);
-        window.location.href = '/dashboard/trending'; // Redirect to profile or dashboard
+        window.location.href = '/dashboard/trending'; 
       } else {
         const data = await res.json();
         setError(data.error || 'Login failed');
@@ -40,7 +53,7 @@ const LoginPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      router.push('/'); // Redirect authenticated users to the dashboard
+      router.push('/'); 
     }
   }, [router]);
   return (
@@ -102,9 +115,8 @@ className="w-5  h-5"
       {error  ==='Incorrect password' && (      <h1 className='text-xs text-red'>{error}</h1>)}
           </div>
           <div className='flex items-center justify-between  pt-2'>
-        <button type="submit" className='bg-black text-sm font-semibold py-2 w-[100px] text-white rounded-full hover:bg-red transition duration-300 ease-out' >Login</button>
+        <button type="submit" className='bg-black text-sm font-semibold py-2 w-[100px] text-white rounded-full hover:bg-red transition duration-300 ease-out'  disabled={check}>{loading?(<img src={'/assets/images/doubleWhite.gif'} alt="" className='w-5 mx-auto'/>): 'Login'}</button>
         <Link href="/signup" className='text-xs text-grey underline'>Don{`'`}t  have an account?</Link>
-        
         </div>
       </form>
       </div>

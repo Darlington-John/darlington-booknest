@@ -86,8 +86,8 @@ features: [
    interface AccordionItemProps {
     isOpen: boolean;
     onClick: () => void;
-    // Add other prop types as needed
-    [key: string]: any; // This allows for additional props with unknown keys
+    
+    [key: string]: any; 
   }
    const AccordionItem: React.FC<AccordionItemProps> = ({ isOpen, onClick ,...props}) => {
     const contentHeight = useRef<HTMLDivElement | null>(null);

@@ -9,19 +9,22 @@ import Link from "next/link";
 import { useUser } from "../context/AuthContext";
 const Cards = (props: any) => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once:false });
-    const float= {
-            transform: isInView ? "none" : "translateY(200px)",
-            opacity: isInView ? 1 : 0,
-            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
-    }
-    const fade= {
-      opacity: isInView ? 1 : 0,
-      transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
-}
     const router = useRouter();
     const {user, loading} = useUser();
     const linkname = usePathname();
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [isDonatedComplete, setIsDonatedComplete] = useState(false);
+    const [isRemoved , setIsRemoved]= useState(false);
+    const [isDonatedRemoved , setIsDonatedRemoved]= useState(false);
+    const isInView = useInView(ref, { once:false });
+    const [addPopup, setAddPopup] = useState(false);
+    const [isAddPopupVisible, setIsAddPopupVisible] = useState(false);
+    const AddPopupRef = useRef<HTMLDivElement>(null);
+    
+    const [loadingShelfId, setLoadingShelfId] = useState(null);
+    const [successfulShelfId, setSuccessfulShelfId] = useState(null);
+
+   
     const handleClick = () => {
         if (linkname === '/dashboard/reading') {
           
@@ -34,8 +37,6 @@ const Cards = (props: any) => {
         }
     }
 
-    const [isCompleted, setIsCompleted] = useState(false);
-    const [isDonatedComplete, setIsDonatedComplete] = useState(false);
     const handleComplete = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -173,7 +174,7 @@ const Cards = (props: any) => {
         }
       }
     };
-    const [isRemoved , setIsRemoved]= useState(false);
+ 
     const handleRemoveFromWantToRead = async (bookUrl: any) => {
       const token = localStorage.getItem('token');
       setIsRemoved(true);
@@ -201,7 +202,7 @@ const Cards = (props: any) => {
         }
       }
     };
-    const [isDonatedRemoved , setIsDonatedRemoved]= useState(false);
+ 
     const handleRemoveFromWantToReadDonated = async (bookImage: any) => {
       const token = localStorage.getItem('token');
       setIsDonatedRemoved(true);
@@ -229,9 +230,7 @@ const Cards = (props: any) => {
         }
       }
     };
-    const [addPopup, setAddPopup] = useState(false);
-    const [isAddPopupVisible, setIsAddPopupVisible] = useState(false);
-    const AddPopupRef = useRef<HTMLDivElement>(null);
+
     const toggleAddPopup = () => {
       if (!addPopup) {
         setAddPopup(true);
@@ -255,8 +254,6 @@ const Cards = (props: any) => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, []);
-    const [loadingShelfId, setLoadingShelfId] = useState(null);
-    const [successfulShelfId, setSuccessfulShelfId] = useState(null)
     const handleShelfSelection = async (shelf: any) => {
       setLoadingShelfId(shelf._id);
   
@@ -337,6 +334,15 @@ setTimeout(() => {
         setLoadingShelfId(null);
       }
     };
+    const float= {
+      transform: isInView ? "none" : "translateY(200px)",
+      opacity: isInView ? 1 : 0,
+      transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
+}
+const fade= {
+opacity: isInView ? 1 : 0,
+transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
+}
     return (  
         <>
         {props.features && (
@@ -352,7 +358,7 @@ setTimeout(() => {
         )}
         
         {props.bookmain && (
-            <button ref={ref} style={fade} onClick={handleClick} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey  ${linkname === '/dashboard/reading' ? 'h-[335px] rounded-sm' : 'h-[360px]'  }`}
+            <button ref={ref} style={fade} onClick={handleClick} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey h-[335px] rounded-sm `}
             
            
  
@@ -368,7 +374,7 @@ setTimeout(() => {
     <h1 className="text-xl  font-bold  text-center leading-none  line-clamp-1  lg:text-lg lg:leading-none">{props.name}</h1>
     <h1 className="text-sm text-grey text-center  leading-none ">by {props.author}</h1>
     </div>
-{linkname !== '/dashboard/reading' && (<h1 className="text-base  font-bold text-center  text-red ">{props.price}</h1>) }
+
 
 
 </div>
@@ -666,6 +672,73 @@ Save
     
     </div>
                 </Link>
+        )}
+          {props.donatedBooksRead && (
+          <div className={`flex  gap-2 items-start    w-[380px] bg-lightPink      ease-out  transition duration 300   overflow-hidden  relative  shrink-0    md:border border-lightGrey  cursor-default  h-[280px] rounded-md hover:shadow-xl pr-1  2xs:w-full readingBook `}
+          ref={ref} style={fade} >
+               {!loading && (
+<button className="bg-[#00000091] w-6  h-6  rounded-md items-center  justify-center absolute top-1 left-1 z-20 flex readingBook-button hover:ring-offset-2  hover:ring-[0.1px]  ring-white   transition  duration-300" onClick={toggleAddPopup}>
+<img src='/assets/icons/ellipsis.svg' className="w-[4px]  " alt=""/>
+</button>
+)}
+{addPopup && ( 
+ 
+ <div className={`  w-[160px]  bg-[#000000db]  rounded-md   flex flex-col   gap-1 py-1 px-1 shrink-none  transition ease-out  duration-300 absolute top-2  left-8 z-20  opacity-0   ${isAddPopupVisible ?  ' opacity-100  ' : ' opacity-0'}`}  ref={AddPopupRef}>
+   <h1 className="text-white text-sm font-semibold text-center">Add to shelf</h1>
+   
+     <div className="flex flex-col leading-0">
+{user?.shelves?.map((shelf : any, index: any)=>{
+  const isBookInShelf = shelf.books.some((book: any) => 
+    (book?.url === props.url && book?.coverImage === props.coverImage) ||
+    (book?.url === props.url && props.coverImage === undefined) ||
+    (book?.coverImage === props.coverImage && props.url === undefined)
+  );
+return(
+<button className={`text-xs font-semibold text-white   w-full  py-[6px] rounded-sm line-clamp-1 px-1 text-start items-center justify-between flex  ${isBookInShelf ? ' opacity-[0.3]' : ' hover:bg-grey'}`} key={index + 1}  onClick={props.coverImage?() => handleDonatedShelfSelection(shelf):() => handleShelfSelection(shelf)}  disabled={isBookInShelf}>
+<span>{shelf.name}</span>
+{loadingShelfId === shelf._id ? (
+             <img src="/assets/images/doubleWhite.gif" className="w-4" alt="Loading" />
+           ) : <>{successfulShelfId === shelf._id ? (
+             <img src="/assets/icons/check-white.svg" className="w-3" alt="Success" />
+           ) : null}</>}
+
+</button>
+)})}
+
+</div>
+<Link  href={'/dashboard/shelf'} className="text-xs font-semibold text-white   w-full  py-[6px] rounded-sm  px-1 text-start items-center justify-between hover:bg-grey flex" ><span>Create stack</span>
+   <img src={'/assets/icons/plus.svg'} alt=""  className="w-3"/>
+   </Link>
+   </div>
+)}
+              <Link href={`/dashboard/donated-books/${props._id}`} className="  w-[190px]  h-[280px]  shrink-0">
+<img src={props.book? props.book: props.coverImage} className="object-cover    shrink-0  object-top w-full h-full " alt=""/>
+</Link>
+<div className="flex flex-col gap-2 w-full  py-3 items-center justify-between h-full">
+  <div>
+  <h1 className="text-xl  font-bold  text-center leading-none    lg:text-lg lg:leading-none">{props.name? props.name: props.title}</h1>
+  <h1 className="text-sm text-grey text-center  leading-none ">by {props.author}</h1>
+
+<h1 className="text-xs text-grey text-center font-semibold">{props.pages? props.pages: props.pageCount} pages</h1>
+  
+  </div>
+  
+  <div className="flex items-center gap-2 w-full flex-col">
+{props.coverImage? <button className="h-10  rounded-full      w-full   text-sm       border border-pink bg-red text-white ease-out duration-300  hover:bg-black  hover:text-white  xs:text-xs xs:h-8" type="button" onClick={handleAddToDonatedCurrentlyReading}>
+Read
+  </button>:  <button className="h-10  rounded-full      w-full   text-sm       border border-pink bg-red text-white ease-out duration-300  hover:bg-black  hover:text-white  xs:text-xs xs:h-8" type="button" onClick={handleAddToCurrentlyReading}>
+Read
+  </button> }
+ 
+
+  <button className="h-10  rounded-full     w-full    text-sm       border border-pink ring-1 ring-black  ring-inset text-black  text-center duration-300  hover:bg-black  hover:text-white xs:text-xs xs:h-8" type="button" onClick={toggleAddPopup} >
+Save
+  </button>
+  </div>
+
+
+</div>
+          </div>
         )}
         </>
     );

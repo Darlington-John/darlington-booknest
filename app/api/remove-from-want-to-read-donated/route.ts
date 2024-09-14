@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Remove the book from `toRead` if it exists
+    
     user.toRead = user.toRead.filter((b: { coverImage: string }) => b.coverImage !== coverImage);
 
     await user.save();

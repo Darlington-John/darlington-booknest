@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from 'cloudinary';
 import connectMongo from '~/lib/mongodb';
-// Update with your Book model
+
 import jwt from 'jsonwebtoken';
 import { Book } from '~/models/User';
 

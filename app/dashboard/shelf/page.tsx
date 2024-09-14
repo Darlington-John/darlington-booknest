@@ -18,6 +18,11 @@ const Reading = () => {
   const [shelfPopup, setShelfPopup] = useState(false);
   const [isShelfPopupVisible, setIsShelfPopupVisible] = useState(false);
   const ShelfPopupRef = useRef<HTMLDivElement>(null);
+  const [stackPopup, setStackPopup] = useState(false);
+  const [isStackPopupVisible, setIsStackPopupVisible] = useState(false);
+  const StackPopupRef = useRef<HTMLDivElement>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isSucessful, setIsSucessful]=useState(false);
   const toggleShelfPopup = () => {
     if (!shelfPopup) {
       setShelfPopup(true);
@@ -41,9 +46,7 @@ const Reading = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  const [stackPopup, setStackPopup] = useState(false);
-  const [isStackPopupVisible, setIsStackPopupVisible] = useState(false);
-  const StackPopupRef = useRef<HTMLDivElement>(null);
+
   const toggleStackPopup = () => {
     if (!stackPopup) {
       setStackPopup(true);
@@ -75,7 +78,7 @@ const Reading = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Replace with your actual JWT token
+            Authorization: `Bearer ${token}`, 
           },
           body: JSON.stringify({ name, description }),
         });
@@ -98,8 +101,7 @@ const Reading = () => {
     url: string;
 }
   const bookLibrary =[...newBooks, ...bestSellers];
-  const [isDeleting, setIsDeleting] = useState(false);
-const [isSucessful, setIsSucessful]=useState(false);
+
   const handleDeleteShelf = async (shelfId: string) => {
     setIsDeleting(true);
     try {
@@ -108,7 +110,7 @@ const [isSucessful, setIsSucessful]=useState(false);
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include the JWT token here
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify({ shelfId }),
       });
@@ -177,13 +179,13 @@ New
            })
            .filter((book: Book | undefined): book is Book => book !== undefined);
          
-         // Step 2: Find books from `shelf.books` that don’t match `bookLibrary` but have a `coverImage`
+         
          const nonMatchingBooksWithCover = shelf.books
            .filter((userBook: any) => 
              !bookLibrary.some((book: Book) => book.url === userBook.url) && userBook.coverImage
            );
          
-         // Combine both arrays
+         
          const allBooks = [...matchingBooks, ...nonMatchingBooksWithCover];
             
             return(
@@ -193,7 +195,7 @@ New
             {allBooks.length > 0 ? (
   allBooks.slice(0, 4).map((matchedBook: any, index: any) => (
       <img 
-      src={matchedBook.book ? matchedBook.book : matchedBook.coverImage} // Directly use the URL
+      src={matchedBook.book ? matchedBook.book : matchedBook.coverImage} 
         alt={matchedBook.name} 
         className="w-full   h-full   object-cover  relative z-20" 
        key={index + 1}/>

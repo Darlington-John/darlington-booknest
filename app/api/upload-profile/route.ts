@@ -12,7 +12,7 @@ cloudinary.v2.config({
 
 export async function POST(req: NextRequest) {
   try {
-    // Parse form data from the request
+    
     const formData = await req.formData();
     const file = formData.get('file');
     const token = req.headers.get('Authorization')?.split(' ')[1];
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file uploaded or incorrect format' }, { status: 400 });
     }
 
-    // Convert file to a format suitable for Cloudinary
+    
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       uploadStream.end(buffer);
     });
 
-    // Save the URL to the user's profile in MongoDB
+    
     await connectMongo();
     const user = await User.findByIdAndUpdate(userId, { profile: uploadResult.secure_url }, { new: true });
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Return the secure URL from Cloudinary
+    
     return NextResponse.json({ url: uploadResult.secure_url });
   } catch (error) {
     console.error('Upload error:', error);

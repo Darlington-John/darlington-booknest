@@ -1,4 +1,4 @@
-// app/api/books/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import connectMongo from '~/lib/mongodb';
 import { Book } from '~/models/User';
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectMongo();
 
-    // Fetch all books
+    
     const books = await Book.find();
 
     if (!books) {

@@ -1,6 +1,5 @@
 "use client"
 import { useParams } from "next/navigation";
-import Rating from '@mui/material/Rating';
 import { newBooks } from "~/app/data/new-arrivals";
 import { useEffect, useRef, useState } from "react";
 import { bestSellers } from "~/app/data/best-sellers";
@@ -12,37 +11,16 @@ import Link from "next/link";
 const BookPage = () => {
   const {user, loading} = useUser();
   const [error, setError] = useState(false);
+  const [about, setAbout] = useState(false);
+  const [isAboutVisible, setIsAboutVisible] = useState(false);
     const params = useParams();
     const { url } = params;
 const bookLibrary=[...newBooks, ...bestSellers]
     const book = bookLibrary.find(book => book?.url === url);
     const element1Ref = useRef<HTMLDivElement | null>(null);
     const [element2Height, setElement2Height] = useState('auto');
-
-  useEffect(() => {
-    const updateHeight = () => {
-      const screenWidth = window.innerWidth;
-
-      
-      if (screenWidth > 640) {
-        if (element1Ref.current) {
-          setElement2Height(`${element1Ref.current.offsetHeight}px`);
-        }
-      } else {
-        
-        setElement2Height('auto');
-      }
-    };
-
-    
-    updateHeight();
-
-    
-    window.addEventListener('resize', updateHeight);
-
-    
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
+    const aboutRef = useRef<HTMLDivElement>(null);
+ 
 
   const handleAddToCurrentlyReading = async () => {
     
@@ -110,9 +88,8 @@ const bookLibrary=[...newBooks, ...bestSellers]
     }
   };
 
-  const [about, setAbout] = useState(false);
-  const [isAboutVisible, setIsAboutVisible] = useState(false);
-  const aboutRef = useRef<HTMLDivElement>(null);
+
+
   const toggleAboutPopup = () => {
 
     setTimeout(() =>  window.location.reload(), 1500);
@@ -141,6 +118,32 @@ const bookLibrary=[...newBooks, ...bestSellers]
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  useEffect(() => {
+    const updateHeight = () => {
+      const screenWidth = window.innerWidth;
+
+      
+      if (screenWidth > 640) {
+        if (element1Ref.current) {
+          setElement2Height(`${element1Ref.current.offsetHeight}px`);
+        }
+      } else {
+        
+        setElement2Height('auto');
+      }
+    };
+
+    
+    updateHeight();
+
+    
+    window.addEventListener('resize', updateHeight);
+
+    
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
+  const paragraphs = book?.about.split('\n');
+  const bio = book?.authorBio.split('\n');
     if (!book) {
       return <h1>Book not found</h1>;
     }
@@ -160,25 +163,30 @@ const bookLibrary=[...newBooks, ...bestSellers]
     Already reading
   </button>
 ) : (
-  <button className="bg-black text-center text-base font-semibold text-white w-[300px] rounded-full h-[45px] xs:h-[36px] xs:w-[130px] lg:w-[150px] xs:text-sm  transition duration-300 ease-out  hover:bg-red" onClick={handleAddToCurrentlyReading}>
+  <>{user? (  <button className="bg-black text-center text-base font-semibold text-white w-[300px] rounded-full h-[45px] xs:h-[36px] xs:w-[130px] lg:w-[150px] xs:text-sm  transition duration-300 ease-out  hover:bg-red" onClick={handleAddToCurrentlyReading}>
     Read
-  </button>
+  </button>): (<Link href={'/login'} >
+  <button className="bg-black text-center text-base font-semibold text-white w-[300px] rounded-full h-[45px] xs:h-[36px] xs:w-[130px] lg:w-[150px] xs:text-sm  transition duration-300 ease-out  hover:bg-red" >
+    Read
+    </button>
+  </Link>)}</>
+
 )}</>)}
 {loading? null:(<>{user?.currentlyReading.some((readingBook: any) => readingBook?.url === book.url) ? (
 null
 ) : (
-<button className={`  text-center text-base font-semibold text-black w-[300px]  rounded-[150px] h-[45px] xs:h-[36px] xs:w-[130px] border border-black border-2 lg:w-full xs:text-sm xs:text-sm duration-300 ease-out   ${user?.toRead.some((readingBook: any) => readingBook?.url === book.url) ? ' opacity-[0.4]    ' : ' hover:bg-lightPink hover:text-red hover:border-red'}`}disabled={user?.toRead.some((readingBook: any) => readingBook?.url === book.url)}  onClick={handleAddToWantToRead} >
-{user?.toRead.some((readingBook: any) => readingBook?.url === book.url)? 'In wishlist': 'Add to wishlist'}
-</button>
+  <>{user? (  <button className={`  text-center text-base font-semibold text-black w-[300px]  rounded-[150px] h-[45px] xs:h-[36px] xs:w-[130px] border border-black border-2 lg:w-full xs:text-sm xs:text-sm duration-300 ease-out   ${user?.toRead.some((readingBook: any) => readingBook?.url === book.url) ? ' opacity-[0.4]    ' : ' hover:bg-lightPink hover:text-red hover:border-red'}`}disabled={user?.toRead.some((readingBook: any) => readingBook?.url === book.url)}  onClick={handleAddToWantToRead} >
+  {user?.toRead.some((readingBook: any) => readingBook?.url === book.url)? 'In wishlist': 'Add to wishlist'}
+  </button>): (<Link href={'/login'} >
+    <button className={`  text-center text-base font-semibold text-black w-[300px]  rounded-[150px] h-[45px] xs:h-[36px] xs:w-[130px] border border-black border-2 lg:w-full xs:text-sm xs:text-sm duration-300 ease-out hover:bg-lightPink hover:text-red hover:border-red   `}  >
+Add to wishlist
+  </button>
+  </Link>)}</>
+
 )}</>)}
 
 
 </div>
-<div className="flex flex-col gap-1">
-  
-      <Rating name="size-large" defaultValue={0} size="large" />
-      <h1 className="text-base text-center  xs:text-sm">Rate this book</h1>
-      </div>
       </div>
       </div>
       </div>
@@ -189,20 +197,17 @@ null
         <h1 className="font-  text-[20px] lg:text-base">{book?.author}</h1>
         <img src={'/assets/images/brand.png'} alt="" className="w-6"/>
         </div>
-  <div className="flex items-center gap-2  xs:flex-wrap">
-      <Rating name="size-large" defaultValue={0} size="small" readOnly />
-      <h1 className="font-medium text-[26px]  lg:text-base">4.32</h1>
-      <h1 className="text-grey  text-sm font-semibold  ">124, 567 ratings</h1>
-      <span>.</span>
-      <h1 className="text-grey  text-sm font-semibold ">4,000 reviews</h1>
-      </div>
+
         </div>
 <div className="flex flex-col gap-5  py-4 lg:gap-3">
+<div className="flex flex-col gap-2  xs:gap-1">
+  {paragraphs?.map((paragraph: any, index: any) => (
+      <p key={index + 1} className="text-base  font-semibold   2xl:w-full lg:text-sm  xs:text-[13px] xs:font-normal">{paragraph}</p>
+    ))}
 
-<p className="text-base  font-semibold w-[80%]  2xl:w-full lg:text-sm">
-{book?.about}
-</p>
-<p className="text-base  font-semibold w-[80%] 2xl:w-full lg:text-sm">{book?.more}</p>
+</div>
+
+
 <div className=" flex gap-2 items-center xs:flex-col">
 <h1 className="text-sm font-semibold  text-grey">Genres</h1>
 <div className="flex gap-4 xs:flex-wrap">
@@ -221,14 +226,19 @@ null
 
 <div className="flex gap-2  items-center">
   <img className="w-16  h-16  rounded-full lg:w-10 lg:h-10" src={book.authorProfile ? book.authorProfile : '/assets/images/user.jpg' }  alt="" />
+  
   <div className="flex flex-col gap-0 items-start">
 <h1 className="text-base font-bold">{book?.author}</h1>
-<h1 className="text-grey text-sm font-semibold  font-semibold">2 followers</h1>
+
   </div>
 </div>
-<p className="text-base font-semibold lg:text-sm">
-{book?.authorBio}
-</p>
+<div className="flex flex-col gap-2  xs:gap-1">
+  {bio?.map((paragraph: any, index: any) => (
+      <p key={index + 1} className="text-base  font-semibold   2xl:w-full lg:text-sm  xs:text-[13px] xs:font-normal">{paragraph}</p>
+    ))}
+
+</div>
+
 </div>
       </div>
       {about && (

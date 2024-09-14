@@ -52,7 +52,7 @@ export default function SignUp() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      router.push('/'); // Redirect authenticated users to the dashboard
+      router.push('/'); 
     }
   }, [router]);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);

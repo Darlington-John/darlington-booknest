@@ -1,8 +1,8 @@
-// app/context/UserContext.tsx
+
 'use client';
 
 import { usePathname } from 'next/navigation';
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
 const UserContext = createContext<any>(null);
 
@@ -27,7 +27,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           const data = await res.json();
           setUser(data.user);
         } else {
-          // Redirect to login or handle accordingly
+          
           window.location.href = '/login';
         }
       } catch (err) {
@@ -49,7 +49,7 @@ setIsDropped(false);
 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const DroppedRef = useRef<HTMLDivElement>(null);
-    const toggleDroppedPopup = () => {
+    const toggleDroppedPopup = useCallback(() => {
       if (!isDropped) {
         setIsDropped(true);
         setIsPopupVisible(true);
@@ -57,8 +57,8 @@ setIsDropped(false);
         setIsPopupVisible(false);
         setTimeout(() => setIsDropped(false), 500);
       }
-      
-    };
+    }, [isDropped]);
+
 
     const handleClickOutside = (event: MouseEvent) => {
       if (DroppedRef.current && !DroppedRef.current.contains(event.target as Node)) {
@@ -74,11 +74,28 @@ setIsDropped(false);
       };
     }, []);
 
-
+    const providerValue = useMemo(() => ({
+      user,
+      isOverlayOpen,
+      setIsOverlayOpen,
+      isDropped,
+      setIsDropped,
+      DroppedRef,
+      toggleDroppedPopup,
+      isPopupVisible,
+      setIsPopupVisible,
+      loading,
+    }), [
+      user, 
+      isOverlayOpen, 
+      isDropped, 
+      DroppedRef, 
+      toggleDroppedPopup, 
+      isPopupVisible, 
+      loading
+    ]);
   return (
-    <UserContext.Provider value={{user, isOverlayOpen, setIsOverlayOpen,isDropped, setIsDropped, DroppedRef, toggleDroppedPopup, isPopupVisible, setIsPopupVisible, loading
-
-    }}>
+    <UserContext.Provider value={providerValue}>
       {children}
     </UserContext.Provider>
   );

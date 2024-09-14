@@ -9,61 +9,12 @@ const DonateBook = () => {
     const {user, loading} = useUser();
     const [isDonatePopupVisible, setIsDonatePopupVisible] = useState(false);
     const donatePopupRef = useRef<HTMLDivElement>(null);
-    const toggleDonatePopup = () => {
-      if (!donatePopup) {
-        setDonatePopup(true);
-        setIsDonatePopupVisible(true);
-      } else {
-        setIsDonatePopupVisible(false);
-        setTimeout(() => setDonatePopup(false), 500);
-      }
-      
-    };
-    const handleClickOutside = (event:any) => {
-      if (donatePopupRef.current && !donatePopupRef.current.contains(event.target)) {
-        setIsDonatePopupVisible(false);
-        setTimeout(() => setDonatePopup(false), 500);
-      }
-      
-    };
-    useEffect(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, []);
     const [sucessPopup, setSucessPopup] = useState(false);
     const [isSucessPopupVisible, setIsSucessPopupVisible] = useState(false);
     const SucessPopupRef = useRef<HTMLDivElement>(null);
-    const toggleSucessPopup = () => {
-      if (!sucessPopup) {
-        setSucessPopup(true);
-        setIsSucessPopupVisible(true);
-      } else {
-        setIsSucessPopupVisible(false);
-        setTimeout(() => setSucessPopup(false), 500);
-      }
-      
-    };
-    const handleClickOutsideSucess = (event:any) => {
-      if (SucessPopupRef.current && !SucessPopupRef.current.contains(event.target)) {
-        setIsSucessPopupVisible(false);
-        setTimeout(() => setSucessPopup(false), 500);
-        setTimeout(() => window.location.reload(), 1000);
-        
-      }
-      
-    };
-    useEffect(() => {
-      document.addEventListener('mousedown', handleClickOutsideSucess);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutsideSucess);
-      };
-    }, []);
     const pdfInputRef = useRef<HTMLInputElement | null>(null);
     const coverInputRef = useRef<HTMLInputElement | null>(null);
     const authorInputRef = useRef<HTMLInputElement | null>(null);
-  
     const [bookDetails, setBookDetails] = useState({
       title: '',
       author: '',
@@ -90,6 +41,61 @@ const DonateBook = () => {
       coverImage: false,
       authorProfile: false,
     });
+    const [submit,setSubmit] =useState(false);
+    const [donatedBooks, setDonatedBooks] = useState<any[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const toggleDonatePopup = () => {
+      if (!donatePopup) {
+        setDonatePopup(true);
+        setIsDonatePopupVisible(true);
+      } else {
+        setIsDonatePopupVisible(false);
+        setTimeout(() => setDonatePopup(false), 500);
+      }
+      
+    };
+    const handleClickOutside = (event:any) => {
+      if (donatePopupRef.current && !donatePopupRef.current.contains(event.target)) {
+        setIsDonatePopupVisible(false);
+        setTimeout(() => setDonatePopup(false), 500);
+      }
+      
+    };
+    useEffect(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
+
+    const toggleSucessPopup = () => {
+      if (!sucessPopup) {
+        setSucessPopup(true);
+        setIsSucessPopupVisible(true);
+      } else {
+        setIsSucessPopupVisible(false);
+        setTimeout(() => setSucessPopup(false), 500);
+      }
+      
+    };
+    const handleClickOutsideSucess = (event:any) => {
+      if (SucessPopupRef.current && !SucessPopupRef.current.contains(event.target)) {
+        setIsSucessPopupVisible(false);
+        setTimeout(() => setSucessPopup(false), 500);
+        setTimeout(() => window.location.reload(), 1000);
+        
+      }
+      
+    };
+    useEffect(() => {
+      document.addEventListener('mousedown', handleClickOutsideSucess);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutsideSucess);
+      };
+    }, []);
+
+  
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: string) => {
       if (event.target.files?.[0]) {
         const file = event.target.files[0];
@@ -129,7 +135,7 @@ const DonateBook = () => {
       bookDetails.authorProfile
     );
 
-    const [submit,setSubmit] =useState(false);
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
   
@@ -145,18 +151,18 @@ const DonateBook = () => {
       formData.append('pageCount', bookDetails.pageCount);
       formData.append('aboutAuthor', bookDetails.aboutAuthor);
       formData.append('genres', JSON.stringify(bookDetails.genres));
-      formData.append('donatedBy', user._id); // Replace with actual user ID
+      formData.append('donatedBy', user._id); 
     
       if (bookDetails.pdf) formData.append('pdf', bookDetails.pdf);
       if (bookDetails.coverImage) formData.append('coverImage', bookDetails.coverImage);
       if (bookDetails.authorProfile) formData.append('authorProfile', bookDetails.authorProfile);
     
       try {
-        const token = localStorage.getItem('token'); // Ensure token is correctly retrieved
+        const token = localStorage.getItem('token'); 
         const response = await fetch('/api/donate-book', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`, 
           },
           body: formData,
         });
@@ -174,11 +180,10 @@ toggleDonatePopup();
         alert('An unexpected error occurred. Please try again later.');
       }
     };
-    const [donatedBooks, setDonatedBooks] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const userId = user?._id; // Assuming you have access to the user ID
+  
+    const userId = user?._id; 
 
-    // Fetch the donated books on component mount
+    
     useEffect(() => {
       const fetchDonatedBooks = async () => {
         if (!userId) {
@@ -190,14 +195,14 @@ toggleDonatePopup();
           const response = await fetch('/api/user-donated-books', {
             method: 'GET',
             headers: {
-              'user-id': userId, // Passing userId via headers
+              'user-id': userId, 
             },
           });
   
           const data = await response.json();
   
           if (response.ok) {
-            setDonatedBooks(data.books); // Set the fetched books in the state
+            setDonatedBooks(data.books); 
           } else {
             setError(data.error || 'Failed to fetch donated books');
           }
@@ -210,7 +215,9 @@ toggleDonatePopup();
       fetchDonatedBooks();
     }, [userId]);
   
-
+    const nested =(donatedBooks?.length > 0 
+      ? 'justify-start xs:justify-center items-start' 
+      : 'justify-center items-center  ');
 
 
     return ( <div className="flex  flex-col w-full h-screen overflow-auto ">
@@ -225,7 +232,7 @@ toggleDonatePopup();
         <button className="bg-red text-white  rounded-md py-3 w-[90px] text-sm font-semibold flex gap-2 items-center justify-center duration-300 hover:bg-black  sm:py-2   sm:w-[70px]  sm:text-xs" onClick={toggleDonatePopup}>
 
 <span>
-New
+Donate
 </span>
 <img src={'/assets/icons/plus.svg'} alt="" className="w-3"/>
 </button>
@@ -234,10 +241,14 @@ New
       <h1 className="   text-2xl text-start  font-medium  text-red">Books you donated</h1>
 <p className="text-base  text-grey  md:text-sm  xs:text-center">Access all books you donated to the community </p>
       </div>):(null)}
+      <div className={`flex gap-4         w-full      flow  flex-wrap h-auto pb-12     ${loading 
+? 'justify-center items-center' 
+: nested
+}`}>
   {donatedBooks.length>0?<>{donatedBooks.slice().reverse().map((data: any, index: number) => (
-  <Cards alreadyReadBook key={index +1} data={data} {...data}/>
+  <Cards donatedBooksRead key={index +1} data={data} {...data}/>
       ))}</>:(   null)}
-     
+     </div>
         
             </section>)}
 

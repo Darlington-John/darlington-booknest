@@ -6,14 +6,14 @@ export async function GET(req: Request) {
     try {
       await connectMongo();
   
-      // Get userId from the headers
+      
       const userId = req.headers.get('user-id');
   
       if (!userId) {
         return NextResponse.json({ error: 'User ID is missing' }, { status: 400 });
       }
   
-      // Fetch books donated by the user
+      
       const donatedBooks = await Book.find({ donatedBy: userId });
   
       if (donatedBooks.length === 0) {

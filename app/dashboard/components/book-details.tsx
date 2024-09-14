@@ -6,13 +6,29 @@ import { useUser } from "~/app/context/AuthContext";
 import Rating from '@mui/material/Rating';
 import Header from "./header";
 import Link from "next/link";
+import axios from "axios";
 
 const BookPage = ({book}: any) => {
   const {user, loading} = useUser();
  
     const element1Ref = useRef<HTMLDivElement | null>(null);
     const [element2Height, setElement2Height] = useState('auto');
+    const [error, setError] = useState(false);
+    const [about, setAbout] = useState(false);
+    const [isAboutVisible, setIsAboutVisible] = useState(false);
+    const aboutRef = useRef<HTMLDivElement>(null);
+    const [rating, setRating] = useState<number | null>(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+  
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [showButton, setShowButton] = useState(false);
+    const [review, setReview] = useState('');
 
+    const [success, setSuccess] = useState(false);
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [averageRating, setAverageRating] = useState(0);
+    const [starCounts, setStarCounts] = useState({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 });
+    const [totalRatings, setTotalRatings] = useState(0);
   useEffect(() => {
     const updateHeight = () => {
       const screenWidth = window.innerWidth;
@@ -73,10 +89,7 @@ const BookPage = ({book}: any) => {
       }
     }
   };
-  const [error, setError] = useState(false);
-  const [about, setAbout] = useState(false);
-  const [isAboutVisible, setIsAboutVisible] = useState(false);
-  const aboutRef = useRef<HTMLDivElement>(null);
+  
   const toggleAboutPopup = () => {
 
 
@@ -152,6 +165,115 @@ const BookPage = ({book}: any) => {
     { key: 'youngAdult', label: 'Young-adult' },
     { key: 'biography', label: 'Biography' },
   ];
+
+  const handleRatingChange = (event: React.SyntheticEvent, newRating: number | null) => {
+    setRating(newRating);
+    setSuccessMessage(null);
+    if (newRating !== null) {
+      setShowButton(true); 
+    }
+  };
+const bookId= book._id
+
+  const submitRating = async () => {
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem('token'); 
+
+      const response = await axios.post(
+        '/api/rate-book', 
+        { bookId, rating }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSuccessMessage('Rating submitted successfully!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (book && book.ratings.length > 0) {
+      
+      const totalRating = book.ratings.reduce((sum: any, rating: any) => sum + rating.rating, 0);
+      
+      
+      const avgRating = totalRating / book.ratings.length;
+
+      
+      setAverageRating(avgRating);
+    }
+  }, [book]);
+
+  useEffect(() => {
+    if (book && book.ratings.length > 0) {
+      const counts: { [key: number]: number } = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      let total = 0;
+  
+      
+      book.ratings.forEach((rating: any) => {
+        const starRating = rating.rating as number; 
+  
+        if (starRating >= 1 && starRating <= 5) {
+          counts[starRating] += 1; 
+          total += 1;
+        }
+      });
+  
+      setStarCounts(counts as any);
+      setTotalRatings(total);
+    }
+  }, [book]);
+
+  const check = !(
+    review
+  );
+  const handleSubmitReview = async () => {
+    if (check) {
+      alert('Please fill out the review field');
+      return;
+    }
+    setIsSubmittingReview(true);
+    try {
+      const token = localStorage.getItem('token'); // Assuming JWT is stored in localStorage
+ 
+      let firstName: string | undefined;
+      let lastName: string | undefined;
+      let profile: string | undefined;
+      if (!loading  && user) {
+        firstName = user.firstName;
+        lastName = user.lastName;
+        profile = user.profile;
+      }
+      const response = await axios.post(
+        '/api/book-review',
+        { bookId, comment: review, firstName, lastName, profile },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSuccess(true);
+      setIsSubmittingReview(false);
+      setTimeout(() =>  window.location.reload(), 1500);
+      setReview('');  // Clear the review input
+    } catch (err) {
+      alert('Error submitting review');
+      setSuccess(false);
+    }
+  };
+  const paragraphs = book.description.split('\n');
+  const bio = book.aboutAuthor.split('\n');
     if (!book) {
       return <h1>Book not found</h1>;
     }
@@ -192,12 +314,22 @@ null
 </div>
 <div className="flex flex-col gap-1">
   <div className="sm:hidden">
-      <Rating name="size-large" defaultValue={0} size="large"  />
+
+      <Rating name="book-rating" value={rating} onChange={handleRatingChange} size="large" />
+
+
+     
       </div>
       <div className="hidden  sm:flex">
-      <Rating name="size-large" defaultValue={0} size="medium"  />
+      <Rating name="size-large" value={rating} onChange={handleRatingChange} size="medium"  />
       </div>
-      <h1 className="text-sm text-center  sm:text-xs">Rate this book</h1>
+ 
+      {showButton ? (
+      <button onClick={submitRating} disabled={isSubmitting} className="bg-black text-white h-8 px-3 text-sm rounded-full hover:bg-red transition duration-300 ease xs:h-6 xs:text-xs xs:mt-2 xs:bg-red xs:rounded-md">
+        {successMessage?<img src={'/assets/icons/check-white.svg'} className="w-4 mx-auto" alt=""/>: (<> {isSubmitting ?(<img src={'/assets/images/doubleWhite.gif'} className="w-5 mx-auto" alt=""/>): 'Rate'}</>)}
+     
+    </button>
+      ):      <h1 className="text-sm text-center  sm:text-xs">Rate this book</h1>}
       </div>
       </div>
       </div>
@@ -205,24 +337,27 @@ null
       <div className="flex flex-col gap-4  divide-y divide-lightGrey  w-[60%] sm:w-full" ref={element1Ref}>
         <div className="flex flex-col gap-2 items-start py-4 lg:gap-0">
         <h1 className="font-medium  text-[36px] lg:text-2xl  sm:text-xl" >{book?.title}</h1>
+      
         <div className="flex items-center gap-1">
         <h1 className="font-  text-[20px] lg:text-base">{book?.author}</h1>
         <img src={'/assets/images/brand.png'} alt="" className="w-6"/>
         </div>
   <div className="flex items-center gap-2  xs:flex-wrap">
-      <Rating name="size-large" defaultValue={0} size="small" readOnly />
-      <h1 className="font-medium text-[26px]  lg:text-sm">4.32</h1>
-      <h1 className="text-grey  text-sm font-semibold   xs:text-xs">124, 567 ratings</h1>
+      <Rating name="size-large" value={averageRating} size="small" readOnly precision={0.5} />
+      <h1 className="font-medium text-[26px]  lg:text-sm">{averageRating.toFixed(1)}</h1>
+      <h1 className="text-grey  text-sm font-semibold   xs:text-xs">{book.ratings?.length === 0? 'No ratings' : <>{book.ratings.length=== 1? <>{book.ratings.length}  rating</>: <>{book.ratings?.length} ratings</>}</>}</h1>
       <span>.</span>
-      <h1 className="text-grey  text-sm font-semibold  xs:text-xs">4,000 reviews</h1>
+      <h1 className="text-grey  text-sm font-semibold  xs:text-xs">{book.reviews.length === 0? 'No reviews' : <>{book.reviews.length=== 1? <>{book.reviews.length}  review</>: <>{book.reviews.length} reviews</>}</>}</h1>
       </div>
         </div>
 <div className="flex flex-col gap-5  py-4 lg:gap-3">
+  <div className="flex flex-col gap-2  xs:gap-1">
+  {paragraphs.map((paragraph: any, index: any) => (
+      <p key={index + 1} className="text-base  font-semibold   2xl:w-full lg:text-sm  xs:text-[13px] xs:font-normal">{paragraph}</p>
+    ))}
 
-<p className="text-base  font-semibold   2xl:w-full lg:text-sm">
-{book?.description}
-</p>
-<p className="text-base  font-semibold w-[80%] 2xl:w-full lg:text-sm">{book?.more}</p>
+</div>
+
 <div className=" flex gap-1 items-start flex-col xs:gap-0">
 <h1 className="text-sm font-semibold  text-grey">Genres:</h1>
 <div className="flex gap-x-3  flex-wrap gap-y-1">
@@ -245,21 +380,103 @@ null
 <p className="text-grey text-sm font-semibold ">pages: {book?.pageCount}</p>
 </div>
 <div className=" flex flex-col gap-3 items-start w-full   py-4">
-
+<h1 className="font-medium text-2xl  sm:text-xl">About the Author</h1>
 <div className="flex gap-2  items-center">
   <img className="w-16  h-16  rounded-full lg:w-10 lg:h-10  object-cover" src={book.authorProfile ? book.authorProfile : '/assets/images/user.jpg' }  alt="" />
   <div className="flex flex-col gap-0 items-start">
+
 <h1 className="text-base font-bold">{book?.
 author}</h1>
-<h1 className="text-grey text-sm font-semibold  font-semibold">2 followers</h1>
+
   </div>
 </div>
-<p className="text-base font-semibold lg:text-sm">
-{book?.
-aboutAuthor}
-</p>
+<div className="flex flex-col gap-2  xs:gap-1">
+  {bio.map((paragraph: any, index: any) => (
+      <p key={index + 1} className="text-base  font-semibold   2xl:w-full lg:text-sm  xs:text-[13px] xs:font-normal">{paragraph}</p>
+    ))}
+
 </div>
+
+</div>
+<div className="w-full flex flex-col gap-6  items-stretch py-4 sm:gap-3">
+    <h1 className="font-medium text-2xl  sm:text-xl">Community ratings and reviews</h1>
+<div className="flex flex-col gap-5 xs:gap-3">
+{Object.entries(starCounts).slice().reverse().map(([star, count]) => {
+  
+  const percentage = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+
+  return (
+    <div key={star} className="flex items-center gap-3 xs:gap-2">
+      <h1 className="shrink-none text-sm font-semibold text-nowrap xs:text-xs">{star} {star === '1'? 'star': 'stars'}</h1>
+
+      {/* Outer container for the rating bar */}
+      <div className="bg-[#F2F2F2] w-full rounded-full overflow-hidden">
+        {/* Inner bar that shows the proportion of ratings */}
+        <div 
+          className="h-[15px] bg-[#FAAF00] transition duration-300 ease rounded-full xs:h-[10px]"
+          style={{
+            width: `${percentage}%`,
+          }}
+        />
       </div>
+
+      {/* Show the count and percentage */}
+      <h1 className="shrink-none text-xs font-semibold text-nowrap text-grey xs:text-[10px]">
+        {count} ({percentage.toFixed(1)}%)
+      </h1>
+    </div>
+  );
+})}
+      </div>
+      </div>
+
+      {book?.reviews.map((data: any, index: any)=>{
+const date = new Date(data.date); // Convert ISO string to Date object
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const pov = data.comment.split('\n');
+        return(
+        <div key={index + 1} className="w-full flex items-start  gap-5  py-8 md:py-4 md:gap-2 xs:flex-col flex-col">
+          <div className="flex flex-col items-start  gap-1  shrink-0  xs:w-full">
+            {data?.profile ? <img src={data.profile} alt="" className="h-12  md:h-8 xs:w-6 xs:h-6  md:w-8 xs:w-6 xs:h-6    w-12  rounded-full object-cover"/>: (<div  className="h-12  md:h-8 xs:w-6 xs:h-6  md:w-8 xs:w-6 xs:h-6   w-12 rounded-full object-cover flex items-center justify-center bg-red">
+              <h1 className="text-white text-center font-medium text-lg md:text-sm xs:text-[10px]">{data?.lastName[0]}.{data?.firstName[0]}</h1>
+              </div>)}
+              <div className="flex-col  flex sm:leading-none w-full  xs:flex-row xs:items-center xs:justify-between">
+          <h1 className="text-sm font-medium  leading-none md:text-xs">{data?.lastName} {data?.firstName} </h1>
+          <h1 className="text-xs font-semibold  text-grey sm:hidden ">{formattedDate}</h1>
+          <h1 className="text-xs font-semibold  text-grey sm:flex hidden sm:text-[10px] ">{formattedDate}</h1>
+          </div>
+          </div>
+          <div className="flex flex-col gap-2  xs:gap-1 items-start w-full">
+  {pov.map((paragraph: any, index: any) => (
+    <h1 className="text-[15px] md:text-xs"  key={index + 1}>{paragraph}</h1>
+    ))}
+
+</div>
+
+        </div>
+       )
+      })}
+      <div className="flex flex-col  w-full">
+            <textarea
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+        placeholder="Write your review here"
+        className="border rounded-lg p-2 w-full text-sm h-[120px]  xs:text-xs xs:h-[100px]"
+      />
+      <button
+        onClick={handleSubmitReview}
+        className="mt-4 px-4 h-[40px] bg-red  text-white rounded-lg w-[200px] hover:bg-black transition duration-300 ease text-sm xs:text-xs xs:h-[35px] xs:w-[130px]"
+        disabled={isSubmittingReview}
+      >
+        {isSubmittingReview? <img src={'/assets/images/doubleWhite.gif'} alt="" className="w-5 mx-auto"/>:  (<>{success? <img src={'/assets/icons/check-White.svg'} alt="" className="w-4 mx-auto"/>: 'Submit Review'}</>)}
+      </button>
+      </div>
+      </div>
+      
       {about && (
 <>
 {error ? (       <div className={`fixed bottom-[0px]  h-full w-full  z-[1000] left-0 flex  justify-center  items-center        backdrop-brightness-50  px-8    xs:px-4  `}>

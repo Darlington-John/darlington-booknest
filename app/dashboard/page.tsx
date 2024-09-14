@@ -3,7 +3,7 @@
 const Dashboard = () => {
  
     return (  <section>
-        <h1 className="text-blue text-5xl">
+        <h1 className="">
 
         </h1>
     </section>);
