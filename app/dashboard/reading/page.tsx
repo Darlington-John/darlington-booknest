@@ -77,7 +77,7 @@ null
         </div>)}
 
         </div>
-        <section className="flex flex-col gap-12  xs:py-10 xs:gap-4 w-full px-4">
+        <section className="flex flex-col gap-12  xs:py-10 xs:gap-4 w-full px-4 py-20">
         <div className="flex flex-col gap-1 items-center">
         <h1 className="font-medium   text-4xl  text-red md:text-2xl    ">Trending books</h1>
 <p className="text-base  text-grey  md:text-sm">See what other readers are adding to their bookshelves</p>

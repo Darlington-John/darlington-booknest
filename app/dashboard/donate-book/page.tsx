@@ -229,8 +229,8 @@ const {books} = useBooks();
         {loading? <div className="w-full h-full flex items-center justify-center">
 <img src="/assets/images/double.gif" alt="" className="w-32  xs:w-20"/>
       </div>: ( <section className={`flex flex-col gap-4  py-10  xs:py-10 xs:gap-4 w-full px-4 h-full    ${donatedBooks.length>0? ' justify-start':' '}`}>
-        <div className="flex  items-center justify-between pb-8 4xl:pr-10 4xl:flex-col 4xl:items-start 4xl:gap-4">
-        <p className=" font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-start   text-center leading-none  4xl:text-start">Donate free books to share knowledge. </p>
+        <div className="flex      flex-col items-start gap-4 ">
+        <p className=" font-medium   text-3xl  text-red  md:text-2xl  xs:text-xl  xs:text-start   text-center leading-none  4xl:text-start">Donate free books to share knowledge. </p>
         <button className="bg-red text-white  rounded-md py-3 w-[90px] text-sm font-semibold flex gap-2 items-center justify-center duration-300 hover:bg-black  sm:py-2   sm:w-[70px]  sm:text-xs" onClick={toggleDonatePopup}>
 
 <span>
@@ -248,18 +248,18 @@ Donate
   <Cards donatedBooksRead key={index +1} data={data} {...data}/>
       ))}</>:(   null)}
      </div>
-     {donatedBooks.length>0&& ( <div className="flex flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
-      <h1 className="font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-center ">All Books donated by the community</h1>
+     {books.length>0&& ( <div className="flex flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
+      <h1 className="font-medium   text-2xl  text-red  md:text-2xl  xs:text-xl  xs:text-center ">All Books donated by the community</h1>
 <p className="text-base  text-grey  md:text-sm  xs:text-center">
 Acess all books donated  by the community </p>
       </div>)}
      <div className={`flex gap-4   gap-3      w-full      flow  flex-wrap h-auto pb-12     ${loading 
 ? 'justify-center items-center' 
-: nested
+: 'justify-start xs:justify-center items-start'
 }`}  >
 
   
-{donatedBooks?.length > 0 ? (
+{books?.length > 0 ? (
       books.slice().reverse().map((book: any, index : any)=> (
         <Cards key={index + 1} donatedBook  book={book} {...book}/>
       ))

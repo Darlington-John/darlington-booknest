@@ -80,7 +80,7 @@ Acess all books donated  by the community </p>
       </div>)}
       <div className={`flex gap-4   gap-3      w-full      flow  flex-wrap h-auto pb-12     ${loading 
 ? 'justify-center items-center' 
-: nested
+: 'justify-start xs:justify-center items-start'
 }`}  >
   
 {books?.length > 0 ? (
