@@ -3,7 +3,6 @@ import { useUser } from "~/app/context/AuthContext";
 import Header from "../components/header";
 import { useEffect, useRef, useState, FormEvent } from "react";
 import Cards from "~/app/components/cards";
-import Link from "next/link";
 import { useBooks } from "~/app/context/BookContext";
 
 const DonateBook = () => {
@@ -217,9 +216,7 @@ toggleDonatePopup();
       fetchDonatedBooks();
     }, [userId]);
   
-    const nested =(donatedBooks?.length > 0 
-      ? 'justify-start xs:justify-center items-start' 
-      : 'justify-center items-center  ');
+ 
 const {books} = useBooks();
 
     return ( <div className="flex  flex-col w-full h-screen overflow-auto ">
