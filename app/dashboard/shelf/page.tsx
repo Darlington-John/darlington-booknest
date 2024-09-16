@@ -7,8 +7,13 @@ import { useDispatch } from 'react-redux';
 import {  addShelf } from "~/app/store/slices/shelvesSlice";
 import { newBooks } from "~/app/data/new-arrivals";
 import { bestSellers } from "~/app/data/best-sellers";
+import Cards from "~/app/components/cards";
+import NewArrivals from "~/app/components/sections/home/new-arrivals";
+import BestSellers from "~/app/components/sections/home/best-sellers";
+import { useBooks } from "~/app/context/BookContext";
 const Reading = () => {
     const {user, loading} = useUser();
+    const {books} = useBooks()
     const dispatch = useDispatch();
 
 
@@ -70,32 +75,37 @@ const Reading = () => {
       document.removeEventListener('mousedown', handleClickOutsideStack);
     };
   }, []);
-  const handleCreateShelf = async () => {
-    const token = localStorage.getItem('token');
-    if (name && description) {
-      try {
-        const response = await fetch('/api/add-shelves', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, 
-          },
-          body: JSON.stringify({ name, description }),
-        });
+  const [submitting, setSubmitting] = useState(false); 
 
-        if (response.ok) {
-          dispatch(addShelf({ name, description }));
-          window.location.reload(); 
-        } else {
-          console.error('Failed to add shelf:', await response.json());
-        }
-      } catch (error) {
-        console.error('Error adding shelf:', error);
+const handleCreateShelf = async () => {
+  const token = localStorage.getItem('token');
+  if (name && description) {
+    setSubmitting(true); 
+    try {
+      const response = await fetch('/api/add-shelves', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, description }),
+      });
+
+      if (response.ok) {
+        dispatch(addShelf({ name, description }));
+        window.location.reload(); 
+      } else {
+        console.error('Failed to add shelf:', await response.json());
       }
-    } else {
-      console.error('Both name and description are required');
+    } catch (error) {
+      console.error('Error adding shelf:', error);
+    } finally {
+      setSubmitting(false); 
     }
-  };
+  } else {
+    console.error('Both name and description are required');
+  }
+};
   
   interface Book {
     url: string;
@@ -130,14 +140,17 @@ const Reading = () => {
       alert('An error occurred while deleting the shelf.');
     } 
   };
-  
+  const nested =(books?.length > 0 
+    ? 'justify-start xs:justify-center items-start' 
+    : 'justify-center items-center  ');
     return ( 
     <div className="flex  flex-col w-full h-full   overflow-auto ">
         <Header/>
         {loading? <div className="w-full h-full flex items-center justify-center">
 <img src="/assets/images/double.gif" alt="" className="w-32 xs:w-20"/>
-        </div>:( <section className={`flex flex-col gap-12  py-10  xs:py-10 xs:gap-4 w-full px-4 h-full     xs:justify-center    xs:py-4  ${loading ? 'justify-center':'justify-start xs:h-auto'}  `}>
-        <div className="flex  justify-between flex-wrap items-center w-full  xs:gap-2">
+        </div>:( 
+          <section className={`flex flex-col gap-12  py-10  xs:py-10 xs:gap-4 w-full px-4 h-full     xs:justify-center    xs:py-4  ${loading ? 'justify-center':'justify-start xs:h-auto'}  `}>
+        <div className="flex  justify-between flex-wrap items-center w-full  xs:gap-2  4xl:pr-8 ">
         <div className="flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
            
         <h1 className="font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-center ">Your shelf</h1>
@@ -155,20 +168,20 @@ New
         </div>
 
       {user?.shelves.length === 0 ? (
-        <div className="flex flex-col items-center w-[600px]  bg-lightPink  mx-auto  py-6 gap-5 px-4 sm:w-full  xs:gap-3 xs:px-2">
+        <div className="flex flex-col items-center w-[600px]  bg-lightPink  mx-auto  py-6 gap-5 px-4 sm:w-full  xs:gap-3 xs:px-2 4xl:w-[700px] 4xl:py-8 4xl:gap-8">
         <div className="flex flex-col gap-2 items-center xs:gap-1">
     <img src={'/assets/images/empty-shelf.jpg'} className="w-40 xs:w-28" alt=""/>
-    <h1 className="text-2xl font-medium text-center  text-red xs:text-xl">
+    <h1 className="text-2xl font-medium text-center  text-red xs:text-xl 4xl:text-3xl">
         Your shelf is empty
     </h1>
     </div>
     <div className="w-full px-2  xs:px-0 ">
-    <p className="text-sm font-semibold text-grey text-center  xs:text-xs">
+    <p className="text-sm font-semibold text-grey text-center  xs:text-xs 4xl:text-base">
     Your reading list is looking a bit bare right now. No worries—this is the perfect opportunity to fill it up! Explore my vast collection of books across different genres, discover stories that capture your imagination, and hit the  <span className="mx-1"><span className="text-base font-bold text-black xs:text-sm ">&#x22EE;</span></span> icon to choose what shelf to add the book to. Your next favorite book is just waiting to be found!
     </p>
     </div>
 
-    <button className="rounded-md bg-red py-3 w-full text-center text-white font-semibold text-sm transition duration-300 hover:bg-black  ease-out xs:py-2 xs:text-xs" onClick={toggleShelfPopup}>Add a stack  to your shelf</button>
+    <button className="rounded-md bg-red py-3 w-full text-center text-white font-semibold text-sm transition duration-300 hover:bg-black  ease-out xs:py-2 xs:text-xs 4xl:text-base " onClick={toggleShelfPopup}>Add a stack  to your shelf</button>
     </div>
       ) : (
         <div className="flex   flex-wrap items-start gap-5 ">
@@ -189,7 +202,7 @@ New
          const allBooks = [...matchingBooks, ...nonMatchingBooksWithCover];
             
             return(
-          <div key={index + 1} className="bg-lightPink p-2   rounded-lg  w-[350px] h-[200px] flex-row flex gap-2">
+          <div key={index + 1} className="bg-lightPink p-2   rounded-lg  w-[350px] h-[200px] flex-row flex gap-2  4xl:w-[450px 4xl:h-[22opx] ">
             <Link  href={`/dashboard/shelf/${shelf._id}`}  className={`h-full w-[120px] shrink-0 rounded-md overflow-hidden  grid    items-start justify-start  relative ${allBooks.length === 1 &&('grid-cols-1  grid-rows-1')}  ${allBooks.length === 2 &&('grid-cols-2  grid-rows-2')} ${allBooks.length === 3 &&('grid-cols-2  grid-rows-1')} ${allBooks.length  >= 4 &&('grid-cols-2  grid-rows-2')}`}>
               <img src={'/assets/images/shelfTrans.png'} alt="" className="absolute w-full h-full top-0 left-0 z-10 "/>
             {allBooks.length > 0 ? (
@@ -252,37 +265,58 @@ Cancel
         )})}
         </div>
       )}
-
+    {books?.length>0 && ( <div className="flex flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
+      <h1 className="font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-center ">Books donated by the community</h1>
+<p className="text-base  text-grey  md:text-sm  xs:text-center">
+Acess all books donated  by the community </p>
+      </div>)}
+     
+<div className={`flex gap-4   gap-3      w-full      flow  flex-wrap h-auto pb-12     ${loading 
+? 'justify-center items-center' 
+: nested
+}`}  >
+  
+{books?.length > 0 ? (
+      books.slice().reverse().map((book: any, index : any)=> (
+        <Cards key={index + 1} donatedBook  book={book} {...book}/>
+      ))
+    ) : (
+  
+  <div className="flex flex-col gap-1 items-center">
+      <p className="    text-2xl text-center  font-medium  text-red  md:text-lg">There are no books donated by the community<br/> <Link href='/dashboard/donate-book' className="underline  hover:text-red font-semibold text-grey text-lg  md:text-xs">Donate a book today!</Link></p>
+      </div>
+    )}
+      </div>
       
 
             </section>)}
 { shelfPopup && (   <div className="fixed bottom-[0px]  h-full w-full  z-50 left-0 flex  justify-center  items-center        backdrop-brightness-50  px-8    xs:px-4  ">
-        <div className={`pop w-[400px]  bg-white rounded-2xl  flex flex-col   gap-4 py-6 px-4 shrink-none   ${isShelfPopupVisible ? '' : 'pop-hidden'}`}  ref={ShelfPopupRef}>
-          <h1 className="text-center text-2xl text-red font-medium">Create a New Stack</h1>
+        <div className={`pop w-[400px]  bg-white rounded-2xl  flex flex-col   gap-4 py-6 px-4 shrink-none 4xl:w-[500px]  4xl:py-8   ${isShelfPopupVisible ? '' : 'pop-hidden'}`}  ref={ShelfPopupRef}>
+          <h1 className="text-center text-2xl text-red font-medium 4xl:text-3xl">Create a New Stack</h1>
 <form className="flex flex-col gap-2">
   <div className="flex w-full flex-col gap-1 ">
-  <label htmlFor="name" className="text-sm ">Stack name</label>
+  <label htmlFor="name" className="text-sm  4xl:text-base">Stack name</label>
           <input
             type="text"
             placeholder="My best sci-fi books"
             value={name}
-            className="text-sm font-semibold  outline-none px-2 py-3 rounded-md rounded-md  w-full border border-lightGrey "
+            className="text-sm font-semibold  outline-none px-2 py-3 rounded-md rounded-md  w-full border border-lightGrey 4xl:text-base "
             onChange={(e) => setName(e.target.value)}
           />
           </div>
           <div className="flex w-full flex-col gap-1 ">
-  <label htmlFor="name" className="text-sm ">Description</label>
+  <label htmlFor="name" className="text-sm 4xl:text-base ">Description</label>
           <textarea
 
       placeholder="Description"
       value={description}
       onChange={(e) => setDescription(e.target.value)}
-    className="text-sm font-semibold  outline-none px-2 py-3 rounded-md rounded-md  w-full border border-lightGrey "
+    className="text-sm font-semibold  outline-none px-2 py-3 rounded-md rounded-md  w-full border border-lightGrey 4xl:text-base "
           />
           </div>
       <div className="flex items-center justify-between w-full pt-4">
-          <button type="button" onClick={handleCreateShelf} className="bg-red text-white py-3 w-[100px] hover:bg-red transition duration-300 text-sm font-semibold rounded-lg">Create stack</button>
-          <button type='button' className="text-sm  hover:text-red  fot-semibold" onClick={toggleShelfPopup}>Cancel</button>
+          <button type="button" onClick={handleCreateShelf} className="bg-red text-white py-3 w-[100px] hover:bg-red transition duration-300 text-sm font-semibold rounded-lg 4xl:text-base 4xl:w-[120px]"  disabled={submitting}>  {submitting ? 'Creating...' : 'Create Stack'}</button>
+          <button type='button' className="text-sm  hover:text-red  fot-semibold 4xl:text-base" onClick={toggleShelfPopup}>Cancel</button>
           </div>
           </form>
         </div>

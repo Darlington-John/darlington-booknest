@@ -15,7 +15,7 @@ const Trending = () => {
         <h1 className="font-medium   text-4xl  text-red md:text-2xl    ">Trending books</h1>
 <p className="text-base  text-grey  md:text-sm">See what other readers are adding to their bookshelves</p>
         </div>
-        <div className="flex gap-8 items-start gap-3      w-full      flow  flex-wrap justify-center sm:hidden"  >
+        <div className="flex gap-8 items-start gap-3      w-full      flow  flex-wrap justify-center sm:hidden 4xl:justify-start"  >
         {books.length > 0 ? (
         books.map((book: any) => (
           <Cards bookmain key={book.id} {...book} />

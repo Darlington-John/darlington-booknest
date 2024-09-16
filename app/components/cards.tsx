@@ -358,7 +358,7 @@ transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
         )}
         
         {props.bookmain && (
-            <button ref={ref} style={fade} onClick={handleClick} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey h-[335px] rounded-sm `}
+            <button ref={ref} style={fade} onClick={handleClick} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey h-[335px] rounded-sm  4xl:w-[280px] 4xl:h-[460px]`}
             
            
  
@@ -368,7 +368,7 @@ transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s"
 <img src='/assets/images/tag.png' className="w-8 absolute -top-1 right-0" alt=""/>
 
                 )}
-<img src={props.book} className="object-cover  w-[200px]  h-[280px]  shrink-0  object-top" alt=""/>
+<img src={props.book} className="object-cover  w-[200px]  h-[280px]  shrink-0  object-top 4xl:w-[280px] 4xl:h-[400px]" alt=""/>
 <div className="flex flex-col gap-2 w-full ">
     <div>
     <h1 className="text-xl  font-bold  text-center leading-none  line-clamp-1  lg:text-lg lg:leading-none">{props.name}</h1>
@@ -655,13 +655,13 @@ Save
           </div>
         )}
         {props.donatedBook && (
-                <Link href={`/dashboard/donated-books/${props._id}`}  ref={ref} style={fade} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey h-[335px] rounded-sm `}
+                <Link href={`/dashboard/donated-books/${props._id}`}  ref={ref} style={fade} className={`flex flex-col gap-2 items-start    w-[200px]    shadow-lg hover:shadow-2xl ease-in  transition duration 300   overflow-hidden  relative  shrink-0  md:shadow-none md:hover:shadow-none  md:border border-lightGrey h-[335px] rounded-sm 4xl:w-[280px] 4xl:h-[460px] `}
                 
                
      
                    >
 
-    <img src={props.coverImage} className="object-cover  w-[200px]  h-[280px]  shrink-0  object-top" alt=""/>
+    <img src={props.coverImage} className="object-cover   w-[200px]  h-[280px]  shrink-0  object-top 4xl:w-[280px] 4xl:h-[400px]  " alt=""/>
     <div className="flex flex-col gap-2 w-full ">
         <div>
         <h1 className="text-xl  font-bold  text-center leading-none  line-clamp-1  lg:text-lg lg:leading-none">{props.title}</h1>
@@ -674,7 +674,7 @@ Save
                 </Link>
         )}
           {props.donatedBooksRead && (
-          <div className={`flex  gap-2 items-start    w-[380px] bg-lightPink      ease-out  transition duration 300   overflow-hidden  relative  shrink-0    md:border border-lightGrey  cursor-default  h-[280px] rounded-md hover:shadow-xl pr-1  2xs:w-full readingBook `}
+          <div className={`flex  gap-2 items-start    w-[380px] bg-lightPink      ease-out  transition duration 300   overflow-hidden  relative  shrink-0    md:border border-lightGrey  cursor-default  h-[280px] rounded-md hover:shadow-xl pr-1  2xs:w-full readingBook  `}
           ref={ref} style={fade} >
                {!loading && (
 <button className="bg-[#00000091] w-6  h-6  rounded-md items-center  justify-center absolute top-1 left-1 z-20 flex readingBook-button hover:ring-offset-2  hover:ring-[0.1px]  ring-white   transition  duration-300" onClick={toggleAddPopup}>

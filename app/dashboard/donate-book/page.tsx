@@ -3,6 +3,8 @@ import { useUser } from "~/app/context/AuthContext";
 import Header from "../components/header";
 import { useEffect, useRef, useState, FormEvent } from "react";
 import Cards from "~/app/components/cards";
+import Link from "next/link";
+import { useBooks } from "~/app/context/BookContext";
 
 const DonateBook = () => {
     const [donatePopup, setDonatePopup] = useState(false);
@@ -218,7 +220,7 @@ toggleDonatePopup();
     const nested =(donatedBooks?.length > 0 
       ? 'justify-start xs:justify-center items-start' 
       : 'justify-center items-center  ');
-
+const {books} = useBooks();
 
     return ( <div className="flex  flex-col w-full h-screen overflow-auto ">
         <Header/>
@@ -227,8 +229,8 @@ toggleDonatePopup();
         {loading? <div className="w-full h-full flex items-center justify-center">
 <img src="/assets/images/double.gif" alt="" className="w-32  xs:w-20"/>
       </div>: ( <section className={`flex flex-col gap-4  py-10  xs:py-10 xs:gap-4 w-full px-4 h-full    ${donatedBooks.length>0? ' justify-start':' '}`}>
-        <div className="flex  items-center justify-between pb-8">
-        <p className=" font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-start   text-center leading-none ">Donate free books to share knowledge. </p>
+        <div className="flex  items-center justify-between pb-8 4xl:pr-10 4xl:flex-col 4xl:items-start 4xl:gap-4">
+        <p className=" font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-start   text-center leading-none  4xl:text-start">Donate free books to share knowledge. </p>
         <button className="bg-red text-white  rounded-md py-3 w-[90px] text-sm font-semibold flex gap-2 items-center justify-center duration-300 hover:bg-black  sm:py-2   sm:w-[70px]  sm:text-xs" onClick={toggleDonatePopup}>
 
 <span>
@@ -241,15 +243,31 @@ Donate
       <h1 className="   text-2xl text-start  font-medium  text-red">Books you donated</h1>
 <p className="text-base  text-grey  md:text-sm  xs:text-center">Access all books you donated to the community </p>
       </div>):(null)}
-      <div className={`flex gap-4         w-full      flow  flex-wrap h-auto pb-12     ${loading 
-? 'justify-center items-center' 
-: nested
-}`}>
+      <div className={`flex gap-4         w-full      flow  flex-wrap h-auto pb-12     justify-start xs:justify-center items-start`}>
   {donatedBooks.length>0?<>{donatedBooks.slice().reverse().map((data: any, index: number) => (
   <Cards donatedBooksRead key={index +1} data={data} {...data}/>
       ))}</>:(   null)}
      </div>
-        
+     {donatedBooks.length>0&& ( <div className="flex flex-col gap-1 items-start  md:gap-0 xs:w-full  xs:items-center">
+      <h1 className="font-medium   text-4xl  text-red  md:text-2xl  xs:text-xl  xs:text-center ">All Books donated by the community</h1>
+<p className="text-base  text-grey  md:text-sm  xs:text-center">
+Acess all books donated  by the community </p>
+      </div>)}
+     <div className={`flex gap-4   gap-3      w-full      flow  flex-wrap h-auto pb-12     ${loading 
+? 'justify-center items-center' 
+: nested
+}`}  >
+
+  
+{donatedBooks?.length > 0 ? (
+      books.slice().reverse().map((book: any, index : any)=> (
+        <Cards key={index + 1} donatedBook  book={book} {...book}/>
+      ))
+    ) : (
+  
+null
+    )}
+      </div>
             </section>)}
 
             {donatePopup && (   <div className="fixed bottom-[0px]  h-full w-full  z-50 left-0 flex  justify-center  items-center        backdrop-brightness-50  px-8    xs:px-4   ">

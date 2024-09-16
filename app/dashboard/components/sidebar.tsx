@@ -39,7 +39,7 @@ features: [
       },
       {
 
-        content: 'Want to read' ,
+        content: 'Wishlist' ,
             to: '/dashboard/to-read'
       },
 ]

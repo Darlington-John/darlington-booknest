@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
     
-      <body className={` bg-white relative   ${myFont.className}`}>
+      <body className={` bg-white relative flex flex-col w-full items-stretch justify-between   ${myFont.className}`}>
         <Provider store={store}>
         <UserProvider>
           <BookProvider>
