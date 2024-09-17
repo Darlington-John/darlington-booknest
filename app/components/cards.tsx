@@ -488,7 +488,7 @@ return(
    </Link>
    </div>
 )}
-              <Link href={`/books/${props.url}`} className="  w-[190px]  h-[280px]  shrink-0">
+              <Link href={props.coverImage ?`${props.pdf}`: `/books/${props.url}`} className="  w-[190px]  h-[280px]  shrink-0">
 <img src={props.book? props.book: props.coverImage} className="object-cover    shrink-0  object-top w-full h-full " alt=""/>
 </Link>
 <div className="flex flex-col gap-2 w-full  py-3 items-center justify-between h-full">
@@ -555,7 +555,7 @@ Save
           </div>
 )}
 
-              <Link href={props.coverImage ?`/dashboard/donated-books/${props._id}`: `/books/${props.url}`} className="  w-[190px]  h-[280px]  shrink-0">
+              <Link  href={props.coverImage ?`${props.pdf}`: `/books/${props.url}`}  className="  w-[190px]  h-[280px]  shrink-0">
 <img src={props.book? props.book: props.coverImage} className="object-cover    shrink-0  object-top w-full h-full " alt=""/>
 </Link>
 <div className="flex flex-col gap-2 w-full  py-3 items-center justify-between h-full">
