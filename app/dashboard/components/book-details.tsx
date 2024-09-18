@@ -7,6 +7,8 @@ import Rating from '@mui/material/Rating';
 import Header from "./header";
 import Link from "next/link";
 import axios from "axios";
+import { getToken } from "~/utils/get-token";
+import { postWithAuth } from "~/utils/post-with-auth";
 
 const BookPage = ({book}: any) => {
   const {user, loading} = useUser();
@@ -53,40 +55,29 @@ const BookPage = ({book}: any) => {
     
     return () => window.removeEventListener('resize', updateHeight);
   }, []);
-
   const handleAddToCurrentlyReading = async () => {
-    
-    const token = localStorage.getItem('token');
-    if (token && book) {
-      try {
-        const res = await fetch('/api/add-donated-books-to-currently-reading', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            book: {
-              title: book.title,
-              pdf: book.pdf, 
-              author: book.author, 
-              coverImage: book.coverImage, 
-              pageCount: book.pageCount, 
-              donatedBy: book.donatedBy, 
-            },
-          }),
-        });
-        window.location.href = book.pdf;
-        if (res.ok) {
-          console.log('sucess');
-        } else {
-          const errorData = await res.json();
-          alert(errorData.error || 'An error occurred');
-        }
-      } catch (error) {
-        console.error('Error adding book to currently reading:', error);
-        alert('An unexpected error occurred. Please try again later.');
-      }
+    const token = getToken(); // Make sure getToken() is correctly defined elsewhere
+    if (!token || !book) return; // Ensure book exists before continuing
+  
+    // Define the book object here to avoid redeclaring
+    const bookData = {
+      title: book.title,
+      pdf: book.pdf,
+      author: book.author,
+      coverImage: book.coverImage,
+      pageCount: book.pageCount,
+      donatedBy: book.donatedBy,
+    };
+  
+    try {
+      // Assuming postWithAuth is a correctly defined function for making POST requests with Authorization
+      await postWithAuth('/api/add-donated-books-to-currently-reading', { book: bookData }, token);
+      
+      // Redirect to the book's PDF after successful API call
+      window.location.href = book.pdf;
+    } catch (error) {
+      console.error('Error adding book to currently reading:', error);
+      alert('An unexpected error occurred. Please try again later.');
     }
   };
   
@@ -118,92 +109,6 @@ const BookPage = ({book}: any) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  const handleAddToWantToRead = async () => {
-    const token = localStorage.getItem('token');
-    if (token && book) {
-      try {
-        const res = await fetch('/api/want-to-read-donated-books', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            book: {
-              title: book.title,
-              pdf: book.pdf, 
-              author: book.author, 
-              coverImage: book.coverImage, 
-              pageCount: book.pageCount, 
-              donatedBy: book.donatedBy,},
-          }),
-        });
-  
-        if (res.ok) {
-        setError(false);
-        toggleAboutPopup();
-
-        
-        } else {
-          const errorData = await res.json();
-          alert(errorData.error || 'An error occurred');
-        }
-      } catch (error) {
-        console.error('Error adding book to want to read:', error);
-        alert('An unexpected error occurred. Please try again later.');
-      }
-    }
-  };
-  const genres = [
-    { key: 'mystery', label: 'Mystery' },
-    { key: 'inspirational', label: 'Inspirational' },
-    { key: 'sciFi', label: 'Scientific Fiction/ Fantasy' },
-    { key: 'romance', label: 'Romance' },
-    { key: 'tradegy', label: 'Tradegy' },
-    { key: 'comedy', label: 'Comedy' },
-    { key: 'horror', label: 'Horror' },
-    { key: 'youngAdult', label: 'Young-adult' },
-    { key: 'biography', label: 'Biography' },
-  ];
-
-  const handleRatingChange = (event: React.SyntheticEvent, newRating: number | null) => {
-    setRating(newRating);
-    setSuccessMessage(null);
-    if (newRating !== null) {
-      setShowButton(true); 
-    }
-  };
-const bookId= book._id
-
-  const submitRating = async () => {
-    setIsSubmitting(true);
-    try {
-      const token = localStorage.getItem('token'); 
-
-      const response = await axios.post(
-        '/api/rate-book', 
-        { bookId, rating }, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setSuccessMessage('Rating submitted successfully!');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      }
-    } catch (error) {
-      console.error('Error submitting rating:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-
   useEffect(() => {
     if (book && book.ratings.length > 0) {
       
@@ -236,7 +141,77 @@ const bookId= book._id
       setTotalRatings(total);
     }
   }, [book]);
+    const handleAddToWantToRead = async () => {
+    const token = getToken(); 
+    if (!token || !book) return;
+    const bookData = {
+      title: book.title,
+      pdf: book.pdf, 
+      author: book.author, 
+      coverImage: book.coverImage, 
+      pageCount: book.pageCount, 
+      donatedBy: book.donatedBy,
+    };
+  
+    try {
 
+      await postWithAuth('/api/want-to-read-donated-books', { book: bookData }, token);
+      setError(false);
+      toggleAboutPopup();
+    } catch (error) {
+      console.error('Error adding book to wishlist', error);
+      alert('An unexpected error occurred. Please try again later.');
+    }
+  };
+  const genres = [
+    { key: 'mystery', label: 'Mystery' },
+    { key: 'inspirational', label: 'Inspirational' },
+    { key: 'sciFi', label: 'Scientific Fiction/ Fantasy' },
+    { key: 'romance', label: 'Romance' },
+    { key: 'tradegy', label: 'Tradegy' },
+    { key: 'comedy', label: 'Comedy' },
+    { key: 'horror', label: 'Horror' },
+    { key: 'youngAdult', label: 'Young-adult' },
+    { key: 'biography', label: 'Biography' },
+  ];
+
+  const handleRatingChange = (event: React.SyntheticEvent, newRating: number | null) => {
+    setRating(newRating);
+    setSuccessMessage(null);
+    if (newRating !== null) {
+      setShowButton(true); 
+    }
+  };
+const bookId= book._id
+
+
+  const submitRating = async () => {
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem('token'); 
+
+      const response = await axios.post(
+        '/api/rate-book', 
+        { bookId, rating }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSuccessMessage('Rating submitted successfully!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const check = !(
     review
   );
@@ -257,7 +232,7 @@ const bookId= book._id
         lastName = user.lastName;
         profile = user.profile;
       }
-      const response = await axios.post(
+ await axios.post(
         '/api/book-review',
         { bookId, comment: review, firstName, lastName, profile },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -272,6 +247,10 @@ const bookId= book._id
       setSuccess(false);
     }
   };
+
+
+
+
   const paragraphs = book.description.split('\n');
   const bio = book.aboutAuthor.split('\n');
     if (!book) {
